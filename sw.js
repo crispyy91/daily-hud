@@ -1,4 +1,4 @@
-const CACHE_NAME = 'daily-hud-cache-v3.6';
+const CACHE_NAME = 'daily-hud-cache-v5.0';
 
 const ASSETS_TO_CACHE = [
     './',
