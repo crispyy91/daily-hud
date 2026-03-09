@@ -1,4 +1,4 @@
-const CACHE_NAME = 'daily-hud-cache-v3.0';
+const CACHE_NAME = 'daily-hud-cache-v3.5';
 
 const ASSETS_TO_CACHE = [
     './',
@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Silnik Offline] Zapisywanie danych taktycznych...');
+                console.log('[Silnik Offline] Aktualizacja protokołów...');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );
@@ -24,7 +24,7 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cache) => {
                     if (cache !== CACHE_NAME) {
-                        console.log('[Silnik Offline] Usuwanie starych protokołów...');
+                        console.log('[Silnik Offline] Usuwanie starych wersji...');
                         return caches.delete(cache);
                     }
                 })
