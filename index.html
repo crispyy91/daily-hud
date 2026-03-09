@@ -3,214 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DAILY_HUD | Taktyczny Planer Przetrwania v3.0</title>
+    <title>DAILY_HUD | Tactical Planner v3.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <link rel="manifest" href="manifest.json">
-    
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
-    
-    <meta property="og:title" content="DAILY_HUD | Taktyczny Planer Przetrwania">
-    <meta property="og:description" content="Minimalistyczny, taktyczny planer dla zabieganych rodziców. Ogarnij codzienność jak misję wojskową. Darmowy, bezpieczny, offline.">
-    <meta property="og:image" content="logo.png">
-
 
     <style>
         :root {
-            --bg: #f0f4f8; /* Jasne, świeże tło */
-            --card: #ffffff; /* Białe karty */
-            --primary: #008080; /* Profesjonalny turkus (Teal) */
+            /* Light Theme (Default) */
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --primary: #008080;
             --primary-glow: rgba(0, 128, 128, 0.2);
-            --text: #1a2b3c; /* Ciemny, czytelny tekst */
-            --text-dim: #7f8c9d; /* Przygaszony tekst */
-            --border: #dbe2e8; /* Jasne obramowania */
-            --tracker: #8e44ad; /* Fioletowy dla neutralnych logów */
-            --bad: #e67e22; /* Ciepły pomarańcz dla limitów */
+            --text: #1a2b3c;
+            --text-dim: #7f8c9d;
+            --border: #dbe2e8;
+            --tracker: #8e44ad;
+            --bad: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --bg: #0a0f14;
+            --card: #121a21;
+            --primary: #00f2f2;
+            --primary-glow: rgba(0, 242, 242, 0.3);
+            --text: #e0e6ed;
+            --text-dim: #64748b;
+            --border: #1e293b;
+            --tracker: #bf7af0;
+            --bad: #ff8c00;
         }
 
         body {
             font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text);
             margin: 0; padding: 12px; min-height: 100vh; -webkit-font-smoothing: antialiased;
+            transition: background 0.3s, color 0.3s;
         }
 
         body::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background-image: linear-gradient(0deg, rgba(255,255,255,0.8) 50%, transparent 50%);
+            background-image: linear-gradient(0deg, rgba(255,255,255,0.05) 50%, transparent 50%);
             z-index: 9999; background-size: 100% 4px; pointer-events: none; opacity: 0.1;
         }
 
         #watermark {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-20deg);
-            font-size: 10vw; font-weight: 900; color: rgba(0, 128, 128, 0.03);
+            font-size: 10vw; font-weight: 900; color: var(--primary); opacity: 0.03;
             white-space: nowrap; z-index: -1; pointer-events: none; font-family: 'Audiowide', sans-serif;
         }
 
-        header { padding: 10px 0; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border); margin-bottom: 15px; background: var(--card); padding: 15px; border-radius: 8px;}
-        .logo {
-            font-family: 'Audiowide', sans-serif; font-size: 1.2rem; letter-spacing: 1px;
-            color: var(--primary); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); position: relative;
-        }
+        header { padding: 15px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border); margin-bottom: 15px; background: var(--card); border-radius: 8px;}
+        .logo { font-family: 'Audiowide', sans-serif; font-size: 1.2rem; letter-spacing: 1px; color: var(--primary); }
         
-        .logo:active { animation: glitch 0.2s linear infinite; }
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-1px, 1px) }
-            40% { transform: translate(-1px, -1px) }
-            60% { transform: translate(1px, 1px) }
-            80% { transform: translate(1px, -1px) }
-            100% { transform: translate(0) }
-        }
-
         .user-level { text-align: right; }
         .lvl-text { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--text-dim); }
-        .lvl-val { font-family: 'Audiowide'; font-size: 1.4rem; color: var(--text); text-shadow: 0 0 5px var(--primary-glow); }
+        .lvl-val { font-family: 'Audiowide'; font-size: 1.4rem; color: var(--text); }
 
-        /* PROGRESS BAR */
-        .progress-container {
-            width: 100%; background: #e0e6ed; height: 10px; margin-bottom: 15px;
-            position: relative; border-radius: 5px; overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .progress-bar {
-            height: 100%; background: var(--primary); width: 0%;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--primary-glow);
-            position: relative;
-        }
+        .progress-container { width: 100%; background: var(--border); height: 10px; margin-bottom: 15px; border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.8s ease; box-shadow: 0 0 10px var(--primary-glow); }
 
-        /* TOP ACTIONS */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
         .btn-action, .btn-icon {
-            background: #fff; color: var(--primary); border: 1px solid var(--primary);
+            background: var(--card); color: var(--primary); border: 1px solid var(--primary);
             padding: 10px 15px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: 700;
             text-transform: uppercase; transition: 0.2s; border-radius: 5px;
             clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-action:hover, .btn-icon:hover { background: var(--primary); color: #fff; box-shadow: 0 0 10px var(--primary-glow); }
-        .btn-action:active { transform: scale(0.95); }
+        .btn-action:hover, .btn-icon:hover { background: var(--primary); color: var(--bg); }
 
-        .tabs { display: flex; overflow-x: auto; gap: 8px; scrollbar-width: none; flex-grow: 1; padding-bottom: 5px; }
-        .tabs::-webkit-scrollbar { display: none; }
+        .tabs { display: flex; overflow-x: auto; gap: 8px; flex-grow: 1; padding-bottom: 5px; scrollbar-width: none; }
         .tab-btn {
             background: var(--card); border: 1px solid var(--border); padding: 8px 16px;
             color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase;
-            cursor: pointer; transition: 0.3s; white-space: nowrap; font-family: 'Orbitron';
-            border-radius: 5px;
-            clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+            cursor: pointer; font-family: 'Orbitron'; border-radius: 5px;
         }
-        .tab-btn.active { border-color: var(--primary); color: var(--primary); background: #fff; box-shadow: 2px 2px 8px rgba(0,128,128,0.1); }
+        .tab-btn.active { border-color: var(--primary); color: var(--primary); }
 
-        /* TABLE */
         .table-container { 
-            background: var(--card); border: 1px solid var(--border); position: relative; 
-            max-height: 55vh; overflow: hidden; display: flex; flex-direction: column;
-            border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            background: var(--card); border: 1px solid var(--border); max-height: 55vh; overflow: hidden; display: flex; flex-direction: column;
+            border-radius: 8px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
         }
-        .scroll-area { overflow: auto; scroll-behavior: smooth; flex-grow: 1;}
+        .scroll-area { overflow: auto; flex-grow: 1;}
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
+        th { background: var(--bg); padding: 15px 5px; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; position: sticky; top: 0; z-index: 5; font-family: 'Orbitron'; }
+        td { padding: 12px 5px; border-bottom: 1px solid var(--border); text-align: center; }
 
-        th {
-            background: #f8fafc; padding: 15px 5px; font-size: 0.6rem; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border);
-            position: sticky; top: 0; z-index: 5; font-family: 'Orbitron';
-        }
-
-        td { padding: 12px 5px; border-bottom: 1px solid #edf2f7; text-align: center; transition: background 0.2s;}
-        tr:hover td { background: #f1f5f9; }
-
-        .sticky-col {
-            position: sticky; left: 0; background: var(--card) !important; border-right: 1px solid var(--border) !important;
-            font-family: 'Orbitron'; font-weight: 700; color: var(--text); font-size: 0.9rem; min-width: 45px; z-index: 6;
-        }
-        th.sticky-col { z-index: 10; background: #f8fafc !important; color: var(--primary);} 
-        .sticky-col span { font-size: 0.45rem; color: var(--primary); display: block; font-family: 'Inter'; letter-spacing: 1px;}
-
-        .weekly-row { background: #e6f7f7 !important; font-size: 0.6rem; color: var(--text); font-weight: 800; font-family: 'Orbitron'; }
-        .weekly-row td { padding: 8px; border-top: 1px solid var(--primary); border-bottom: 1px solid var(--primary); color: var(--primary); }
-
-        /* CHECKBOXES (CLEAN STYLE) */
+        .sticky-col { position: sticky; left: 0; background: var(--card) !important; border-right: 1px solid var(--border) !important; font-family: 'Orbitron'; font-weight: 700; z-index: 6; }
+        
         input[type="checkbox"] {
-            appearance: none; width: 26px; height: 26px; border: 2px solid #cbd5e1;
-            background: #fff; cursor: pointer; position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 6px;
-            clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+            appearance: none; width: 26px; height: 26px; border: 2px solid var(--border);
+            background: var(--card); cursor: pointer; position: relative; border-radius: 6px;
         }
-        input[type="checkbox"]:active { transform: scale(0.85); }
-        input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); box-shadow: 0 3px 8px var(--primary-glow); }
-        input[type="checkbox"]:checked::after { content: "✓"; color: #fff; position: absolute; left: 7px; top: 3px; font-weight: 900; font-size: 16px; }
-        
-        .type-bad:checked { background: var(--bad); border-color: var(--bad); box-shadow: 0 3px 8px rgba(230,126,34,0.3); }
-        .type-tracker:checked { background: var(--tracker); border-color: var(--tracker); box-shadow: 0 3px 8px rgba(142,68,173,0.3); }
-        .type-tracker:checked::after { content: "■"; color: #fff; font-size: 12px; left: 8px; top: 7px;}
+        input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
+        input[type="checkbox"]:checked::after { content: "✓"; color: var(--card); position: absolute; left: 7px; top: 3px; font-weight: 900; }
 
-        /* STATS HUD (CLEAN) */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 12px; margin-top: 15px; }
-        .stat-card { 
-            background: var(--card); border: 1px solid var(--border); padding: 15px 5px; text-align: center; 
-            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            border-bottom: 3px solid #cbd5e1; transition: 0.3s; border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .stat-card.active-streak { border-bottom-color: var(--primary); box-shadow: 0 5px 15px rgba(0,128,128,0.1); }
-        .stat-val { font-family: 'Audiowide'; font-size: 1.4rem; display: block; color: var(--text);}
-        .stat-label { font-size: 0.45rem; color: var(--text-dim); text-transform: uppercase; margin-top: 8px; display: block; font-family: 'Orbitron'; letter-spacing: 1px;}
-        .streak-fire { color: var(--primary); font-size: 0.6rem; margin-top: 5px; font-weight: 800; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px 5px; text-align: center; border-radius: 5px; }
 
-        /* MODALS */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(26,43,60,0.6); z-index: 10000; padding: 15px; align-items: center; justify-content: center; backdrop-filter: blur(3px);}
-        .modal-box { 
-            background: var(--card); border: 1px solid var(--border); padding: 25px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1); border-radius: 10px;
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px;}
-        .modal-title { margin: 0; font-family: 'Audiowide'; color: var(--primary); font-size: 1rem; letter-spacing: 1px;}
-        .close-btn { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; font-family: 'Orbitron'; }
-        .close-btn:hover { color: var(--primary); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; padding: 15px; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
+        .modal-box { background: var(--card); padding: 25px; width: 100%; max-width: 450px; border-radius: 10px; border: 1px solid var(--primary); }
         
-        textarea, input[type="text"], select { 
-            width: 100%; box-sizing: border-box; background: #f8fafc; color: var(--text); border: 1px solid var(--border); 
-            padding: 12px; margin-bottom: 15px; outline: none; font-family: 'Orbitron'; font-size: 0.8rem; border-radius: 5px;
-        }
-        textarea:focus, input[type="text"]:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 10px var(--primary-glow); }
-        textarea { height: 120px; resize: vertical; }
+        textarea, input[type="text"], select { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 12px; margin-bottom: 15px; font-family: 'Orbitron'; border-radius: 5px; }
 
-        /* Toast / Alert */
-        #toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: #fff; padding: 15px 30px; 
-            font-family: 'Audiowide'; font-size: 0.8rem; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; 
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            box-shadow: 0 10px 25px rgba(0,128,128,0.2); border-radius: 5px;
-        }
+        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--bg); padding: 15px 30px; font-family: 'Audiowide'; transition: 0.4s; z-index: 9999; border-radius: 5px; }
         #toast.show { bottom: 30px; }
-
-        .note-dot { width: 6px; height: 6px; background: var(--primary); margin: 3px auto 0; display: none; box-shadow: 0 0 5px var(--primary-glow); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);}
+        .note-dot { width: 6px; height: 6px; background: var(--primary); margin: 3px auto 0; display: none; border-radius: 50%; }
         .has-note .note-dot { display: block; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <div id="watermark">SYS.2026</div>
 
     <header>
-        <div class="logo">DAILY_HUD <br><span style="font-size: 0.5rem; color: var(--text-dim); font-family: 'Orbitron'">v3.0.CLEAN</span></div>
+        <div class="logo">DAILY_HUD <br><span id="ui-version" style="font-size: 0.5rem; color: var(--text-dim); font-family: 'Orbitron'">v3.5.MULTI</span></div>
         <div class="user-level">
-            <div class="lvl-text">SYSTEM LEVEL</div>
+            <div class="lvl-text" id="ui-sys-lvl">SYSTEM LEVEL</div>
             <div class="lvl-val" id="sys-lvl">01</div>
         </div>
     </header>
 
-    <div class="progress-container" title="Wydajność Systemu">
+    <div class="progress-container">
         <div class="progress-bar" id="month-progress"></div>
     </div>
 
     <div class="top-bar">
-        <button class="btn-icon" onclick="openSettings()">[ KONFIG_SYS ]</button>
+        <button class="btn-icon" onclick="openSettings()" id="ui-config">[ KONFIG_SYS ]</button>
         <div class="tabs" id="month-tabs"></div>
-        <button class="btn-action" onclick="scrollToToday()">SYNC_DZISIAJ</button>
+        <button class="btn-action" onclick="scrollToToday()" id="ui-sync">SYNC_DZISIAJ</button>
     </div>
 
     <div class="table-container">
@@ -223,106 +145,148 @@
     </div>
 
     <div class="stats-grid" id="stats-area"></div>
-
-    <div id="toast">SYSTEM ZAINICJOWANY</div>
+    <div id="toast">SYSTEM READY</div>
 
     <div id="modal-note" class="modal">
         <div class="modal-box">
-            <div class="modal-header">
-                <h3 class="modal-title" id="note-modal-title">RAPORT DZIENNY</h3>
-                <button class="close-btn" onclick="closeModal('modal-note')">×</button>
+            <div class="modal-header" style="display:flex; justify-content: space-between; margin-bottom:20px;">
+                <h3 class="modal-title" id="ui-raport-title">RAPORT DZIENNY</h3>
+                <button onclick="closeModal('modal-note')" style="background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer;">×</button>
             </div>
-            <textarea id="note-input" placeholder="Wprowadź dane taktyczne z dzisiaj..."></textarea>
-            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveNote()">ZATWIERDŹ LOG</button>
+            <textarea id="note-input"></textarea>
+            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveNote()" id="ui-save-log">ZATWIERDŹ LOG</button>
         </div>
     </div>
 
     <div id="modal-settings" class="modal">
         <div class="modal-box">
-            <div class="modal-header">
-                <h3 class="modal-title">KONFIGURACJA ZADAŃ</h3>
-                <button class="close-btn" onclick="closeModal('modal-settings')">×</button>
+            <h3 class="modal-title" id="ui-settings-title" style="color:var(--primary); font-family:'Audiowide'; margin-bottom:20px;">KONFIGURACJA</h3>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-icon" style="flex:1;" onclick="toggleTheme()">MOTYW L/D</button>
+                <button class="btn-icon" style="flex:1;" onclick="toggleLang()">JĘZYK PL/EN</button>
             </div>
-            <div id="targets-editor"></div>
-            <button class="btn-icon" style="width:100%; margin-bottom: 20px; border-style: dashed;" onclick="addNewTargetField()">+ DODAJ WEKTOR</button>
-            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveTargets()">ZAPISZ PROTOKÓŁ</button>
 
-            <div class="modal-header" style="margin-top: 30px;">
-                <h3 class="modal-title">BAZA DANYCH</h3>
-            </div>
+            <div id="targets-editor"></div>
+            <button class="btn-icon" style="width:100%; margin-bottom: 20px; border-style: dashed;" onclick="addNewTargetField()" id="ui-add-vector">+ DODAJ WEKTOR</button>
+            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveTargets()" id="ui-save-proto">ZAPISZ PROTOKÓŁ</button>
+
+            <h3 style="color:var(--text-dim); font-size:0.8rem; margin-top:20px;" id="ui-db-title">BAZA DANYCH</h3>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-icon" style="flex:1;" onclick="exportData()">EKSPORT</button>
-                <button class="btn-icon" style="flex:1;" onclick="document.getElementById('import-file').click()">IMPORT</button>
+                <button class="btn-icon" style="flex:1;" onclick="exportData()" id="ui-export">EKSPORT</button>
+                <button class="btn-icon" style="flex:1;" onclick="document.getElementById('import-file').click()" id="ui-import">IMPORT</button>
                 <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
             </div>
         </div>
     </div>
 
     <script>
-        // Zachowano funkcjonalność Audio dla "satysfakcji" z kliknięcia
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playSciFiSound(type) {
-            try {
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                if(type === 'good') { 
-                    osc.type = 'sine'; // Czystszy dźwięk
-                    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
-                    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05); 
-                } else if(type === 'bad') { 
-                    osc.type = 'triangle'; // Mniej agresywny
-                    osc.frequency.setValueAtTime(300, audioCtx.currentTime); 
-                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1); 
-                } else { 
-                    osc.type = 'sine'; 
-                    osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
-                }
-                
-                gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime); // Cichszy dźwięk
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-                
-                osc.start(); osc.stop(audioCtx.currentTime + 0.12);
-            } catch(e) {} 
-        }
+        const TRANSLATIONS = {
+            pl: {
+                sys_lvl: "POZIOM SYSTEMU",
+                config: "[ KONFIG_SYS ]",
+                sync: "SYNC_DZISIAJ",
+                raport: "RAPORT DZIENNY",
+                save_log: "ZATWIERDŹ LOG",
+                settings: "KONFIGURACJA",
+                add_vector: "+ DODAJ WEKTOR",
+                save_proto: "ZAPISZ PROTOKÓŁ",
+                db: "BAZA DANYCH",
+                export: "EKSPORT",
+                import: "IMPORT",
+                ready: "SYSTEM GOTOWY",
+                saved: "ZAPISANO",
+                target_placeholder: "Cel",
+                months: ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"]
+            },
+            en: {
+                sys_lvl: "SYSTEM LEVEL",
+                config: "[ SYS_CONFIG ]",
+                sync: "SYNC_TODAY",
+                raport: "DAILY REPORT",
+                save_log: "SUBMIT LOG",
+                settings: "CONFIGURATION",
+                add_vector: "+ ADD VECTOR",
+                save_proto: "SAVE PROTOCOL",
+                db: "DATABASE",
+                export: "EXPORT",
+                import: "IMPORT",
+                ready: "SYSTEM READY",
+                saved: "LOG SAVED",
+                target_placeholder: "Target",
+                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            }
+        };
 
-        const DEFAULT_TARGETS = [
-            { id: 'tr', ico: '🏋️', lab: 'Trening', type: 'good' },
-            { id: 'wo', ico: '💧', lab: 'Woda', type: 'good' },
-            { id: 'su', ico: '💊', lab: 'Suple', type: 'good' },
-            { id: 'ro', ico: '📚', lab: 'Rozwój', type: 'good' },
-            { id: 'cy', ico: '🩺', lab: 'Zdrowie', type: 'tracker' }, // Neutralny (np. Cykl, Migrena)
-            { id: 'uz', ico: '🍺', lab: 'Zło', type: 'bad' }
-        ];
-
-        const MONTHS = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
-
+        let currentLang = localStorage.getItem('cfg_lang') || 'pl';
         let targets = [];
         let currM = new Date().getMonth();
         let activeNoteKey = "";
 
-        function boot() {
-            loadTargets();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(type === 'good' ? 800 : 300, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function updateUIStrings() {
+            const lang = TRANSLATIONS[currentLang];
+            document.getElementById('ui-sys-lvl').innerText = lang.sys_lvl;
+            document.getElementById('ui-config').innerText = lang.config;
+            document.getElementById('ui-sync').innerText = lang.sync;
+            document.getElementById('ui-raport-title').innerText = lang.raport;
+            document.getElementById('ui-save-log').innerText = lang.save_log;
+            document.getElementById('ui-settings-title').innerText = lang.settings;
+            document.getElementById('ui-add-vector').innerText = lang.add_vector;
+            document.getElementById('ui-save-proto').innerText = lang.save_proto;
+            document.getElementById('ui-db-title').innerText = lang.db;
+            document.getElementById('ui-export').innerText = lang.export;
+            document.getElementById('ui-import').innerText = lang.import;
+        }
+
+        function toggleTheme() {
+            const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('cfg_theme', theme);
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'pl' ? 'en' : 'pl';
+            localStorage.setItem('cfg_lang', currentLang);
+            updateUIStrings();
             renderTabs();
             renderTable();
-            if(new Date().getMonth() === currM) setTimeout(scrollToToday, 500);
-            setTimeout(() => triggerToast("SYSTEM GOTOWY"), 500);
+            triggerToast(TRANSLATIONS[currentLang].ready);
+        }
+
+        function boot() {
+            document.body.setAttribute('data-theme', localStorage.getItem('cfg_theme') || 'dark');
+            loadTargets();
+            updateUIStrings();
+            renderTabs();
+            renderTable();
+            triggerToast(TRANSLATIONS[currentLang].ready);
         }
 
         function loadTargets() {
-            const saved = localStorage.getItem('cfg_targets_26_clean');
-            if (saved) { try { targets = JSON.parse(saved); } catch(e) { targets = [...DEFAULT_TARGETS]; } } 
-            else { targets = [...DEFAULT_TARGETS]; }
+            const saved = localStorage.getItem('cfg_targets_26');
+            targets = saved ? JSON.parse(saved) : [
+                { id: 'tr', ico: '🏋️', lab: 'Trening', type: 'good' },
+                { id: 'wo', ico: '💧', lab: 'Woda', type: 'good' },
+                { id: 'uz', ico: '🍺', lab: 'Zło', type: 'bad' }
+            ];
         }
 
         function renderTabs() {
             const tabs = document.getElementById('month-tabs');
             tabs.innerHTML = "";
-            MONTHS.forEach((m, i) => {
+            TRANSLATIONS[currentLang].months.forEach((m, i) => {
                 const btn = document.createElement('button');
                 btn.className = `tab-btn ${i === currM ? 'active' : ''}`;
                 btn.innerText = `M${(i+1).toString().padStart(2, '0')}`;
@@ -333,7 +297,7 @@
 
         function renderTable() {
             const head = document.getElementById('thead');
-            head.innerHTML = '<th class="sticky-col">Dzień</th>';
+            head.innerHTML = `<th class="sticky-col">${currentLang === 'pl' ? 'Dzień' : 'Day'}</th>`;
             targets.forEach(t => head.innerHTML += `<th>${t.ico}<br>${t.lab}</th>`);
 
             const body = document.getElementById('tbody');
@@ -345,41 +309,27 @@
                 const date = new Date(2026, currM, d);
                 const tr = document.createElement('tr');
                 tr.id = `day-row-${d}`;
-                
-                const isToday = (new Date().getDate() === d && new Date().getMonth() === currM && new Date().getFullYear() === 2026);
-                if(isToday) tr.style.background = "#ffffe0"; // Delikatny żółty dla dzisiaj
-
                 const noteKey = `n26_${currM}_${d}`;
                 const hasNote = localStorage.getItem(noteKey) ? 'has-note' : '';
 
-                let html = `<td class="sticky-col ${hasNote}" onclick="openNoteModal(${d})">${d.toString().padStart(2,'0')}<span>${date.toLocaleDateString('pl',{weekday:'short'}).toUpperCase()}</span><div class="note-dot"></div></td>`;
-                
+                let html = `<td class="sticky-col ${hasNote}" onclick="openNoteModal(${d})">${d.toString().padStart(2,'0')}<span>${date.toLocaleDateString(currentLang,{weekday:'short'}).toUpperCase()}</span><div class="note-dot"></div></td>`;
                 targets.forEach(t => {
                     const key = `c26_${currM}_${d}_${t.id}`;
                     const isChecked = localStorage.getItem(key) === '1';
                     if (isChecked) weeklySums[t.id]++;
-                    
-                    const chkClass = `type-${t.type}`;
-                    html += `<td><input type="checkbox" ${isChecked ? 'checked' : ''} class="${chkClass}" onchange="handleCheck(${d},'${t.id}',this.checked, '${t.type}')"></td>`;
+                    html += `<td><input type="checkbox" ${isChecked ? 'checked' : ''} onchange="handleCheck(${d},'${t.id}',this.checked, '${t.type}')"></td>`;
                 });
-
                 tr.innerHTML = html;
                 body.appendChild(tr);
 
                 if (date.getDay() === 0 || d === daysCount) {
                     const sep = document.createElement('tr');
-                    sep.className = "weekly-row";
-                    let sumHtml = `<td class="sticky-col" style="background: #e6f7f7 !important;">W${Math.ceil(d/7)}</td>`;
-                    
+                    sep.style.background = "var(--primary-glow)";
+                    let sumHtml = `<td class="sticky-col">W</td>`;
                     targets.forEach(t => {
-                        let displayVal = weeklySums[t.id];
-                        let color = "";
-                        if(t.type === 'bad' && displayVal > 1) color = "color: var(--bad);";
-                        if(t.type === 'tracker') color = "color: var(--tracker);";
-                        sumHtml += `<td style="${color}">${displayVal > 0 ? displayVal : '-'}</td>`;
-                        weeklySums[t.id] = 0; 
+                        sumHtml += `<td>${weeklySums[t.id] || '-'}</td>`;
+                        weeklySums[t.id] = 0;
                     });
-                    
                     sep.innerHTML = sumHtml;
                     body.appendChild(sep);
                 }
@@ -388,85 +338,37 @@
         }
 
         function handleCheck(d, id, val, type) {
-            playSciFiSound(val ? type : 'tracker'); 
-            const key = `c26_${currM}_${d}_${id}`;
-            val ? localStorage.setItem(key, '1') : localStorage.removeItem(key);
-            
-            if (val && type === 'good') {
-                let goodDone = 0;
-                let totalGood = targets.filter(t => t.type === 'good').length;
-                targets.filter(t => t.type === 'good').forEach(t => { if(localStorage.getItem(`c26_${currM}_${d}_${t.id}`)) goodDone++; });
-                if(goodDone === totalGood && totalGood > 0) triggerToast("CEL OSIĄGNIĘTY 🎯");
-            }
+            playSound(val ? type : 'neutral');
+            localStorage.setItem(`c26_${currM}_${d}_${id}`, val ? '1' : '0');
             updateEngine();
         }
 
         function updateEngine() {
-            const area = document.getElementById('stats-area');
-            area.innerHTML = "";
-            const daysCount = new Date(2026, currM + 1, 0).getDate();
-            
-            let totalGoodPossible = 0; let totalGoodCompleted = 0;
-            let globalExp = 0; 
-
+            let exp = 0;
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key.startsWith('c26_') && localStorage.getItem(key) === '1') {
-                    const targetId = key.split('_')[3];
-                    const trg = targets.find(t => t.id === targetId);
-                    if(trg && trg.type === 'good') globalExp++;
-                }
+                if (key.startsWith('c26_') && localStorage.getItem(key) === '1') exp++;
             }
+            document.getElementById('sys-lvl').innerText = (Math.floor(exp / 10) + 1).toString().padStart(2, '0');
             
-            const level = Math.floor(globalExp / 10) + 1;
-            document.getElementById('sys-lvl').innerText = level.toString().padStart(2, '0');
-
+            const area = document.getElementById('stats-area');
+            area.innerHTML = "";
             targets.forEach(t => {
-                let count = 0; let streak = 0; let maxStreak = 0;
-
-                for(let d=1; d<=daysCount; d++) {
-                    if(localStorage.getItem(`c26_${currM}_${d}_${t.id}`)) {
-                        count++; streak++;
-                        if(streak > maxStreak) maxStreak = streak;
-                    } else { streak = 0; }
-                }
-
-                if (t.type === 'good') { totalGoodPossible += daysCount; totalGoodCompleted += count; }
-
-                const isBadLimit = t.type === 'bad' && count > 4;
-                const card = document.createElement('div');
-                card.className = `stat-card ${maxStreak >= 3 && t.type === 'good' ? 'active-streak' : ''}`;
-                card.style.borderBottomColor = isBadLimit ? 'var(--bad)' : '';
-                
-                let valColor = "var(--text)";
-                if (isBadLimit) valColor = "var(--bad)";
-                if (t.type === 'tracker') valColor = "var(--tracker)";
-
-                let displayVal = t.type === 'bad' ? (4 - count) : count;
-
-                card.innerHTML = `
-                    <span class="stat-val" style="color:${valColor}">${displayVal.toString().padStart(2,'0')}</span>
-                    <span class="stat-label">${t.type === 'bad' ? 'LIMIT' : t.lab}</span>
-                    ${maxStreak >= 3 && t.type === 'good' ? `<div class="streak-fire">COMBO x${maxStreak}</div>` : ''}
-                `;
-                area.appendChild(card);
+                let count = 0;
+                for(let d=1; d<=31; d++) if(localStorage.getItem(`c26_${currM}_${d}_${t.id}`) === '1') count++;
+                area.innerHTML += `<div class="stat-card"><span style="font-family:Audiowide; font-size:1.2rem;">${count}</span><br><small style="color:var(--text-dim)">${t.lab}</small></div>`;
             });
-
-            const progress = totalGoodPossible === 0 ? 0 : Math.round((totalGoodCompleted / totalGoodPossible) * 100);
-            document.getElementById('month-progress').style.width = `${progress}%`;
         }
 
         function openNoteModal(d) {
             activeNoteKey = `n26_${currM}_${d}`;
-            document.getElementById('note-modal-title').innerText = `LOG DZIEŃ: ${d.toString().padStart(2,'0')}/${(currM+1).toString().padStart(2,'0')}`;
             document.getElementById('note-input').value = localStorage.getItem(activeNoteKey) || "";
             document.getElementById('modal-note').style.display = 'flex';
         }
 
         function saveNote() {
-            const v = document.getElementById('note-input').value.trim();
-            v ? localStorage.setItem(activeNoteKey, v) : localStorage.removeItem(activeNoteKey);
-            closeModal('modal-note'); renderTable(); triggerToast("LOG ZAPISANY");
+            localStorage.setItem(activeNoteKey, document.getElementById('note-input').value);
+            closeModal('modal-note'); renderTable();
         }
 
         function openSettings() {
@@ -478,91 +380,65 @@
 
         function addTargetRow(container, id, ico, lab, type) {
             const div = document.createElement('div');
-            div.dataset.id = id || `t_${Date.now()}`;
-            div.style.display = "flex"; div.style.gap = "5px"; div.style.marginBottom = "10px";
+            div.dataset.id = id || Date.now();
+            div.style.display = "flex"; div.style.gap = "5px";
             div.innerHTML = `
-                <input type="text" value="${ico||''}" style="width: 45px; text-align:center; margin:0;" placeholder="Iko">
-                <input type="text" value="${lab||''}" style="flex:1; margin:0;" placeholder="Cel">
-                <select style="width: auto; margin:0; padding:5px; height: 41px;">
-                    <option value="good" ${type==='good'?'selected':''}>Cel (+)</option>
-                    <option value="bad" ${type==='bad'?'selected':''}>Limit (-)</option>
-                    <option value="tracker" ${type==='tracker'?'selected':''}>Log</option>
+                <input type="text" value="${ico}" style="width:50px">
+                <input type="text" value="${lab}" style="flex:1">
+                <select style="width:auto">
+                    <option value="good" ${type==='good'?'selected':''}>+</option>
+                    <option value="bad" ${type==='bad'?'selected':''}>-</option>
                 </select>
-                <button class="btn-icon" style="color:var(--bad); padding: 5px 12px; margin:0; border-color: var(--bad);" onclick="this.parentElement.remove()">X</button>
+                <button onclick="this.parentElement.remove()" style="color:var(--bad); background:none; border:none; cursor:pointer">X</button>
             `;
             container.appendChild(div);
         }
 
-        function addNewTargetField() { addTargetRow(document.getElementById('targets-editor'), '', '⚡', 'Nowy', 'good'); }
+        function addNewTargetField() { addTargetRow(document.getElementById('targets-editor'), '', '🎯', '', 'good'); }
 
         function saveTargets() {
-            const rows = document.getElementById('targets-editor').children;
             const newTargets = [];
-            for(let r of rows) {
-                const inputs = r.querySelectorAll('input, select');
-                if(inputs[0].value && inputs[1].value) {
-                    newTargets.push({ id: r.dataset.id, ico: inputs[0].value, lab: inputs[1].value, type: inputs[2].value });
-                }
-            }
-            if(newTargets.length === 0) return triggerToast("BŁĄD: PUSTE CELE");
+            document.getElementById('targets-editor').childNodes.forEach(row => {
+                const inputs = row.querySelectorAll('input, select');
+                if(inputs[1].value) newTargets.push({id: row.dataset.id, ico: inputs[0].value, lab: inputs[1].value, type: inputs[2].value});
+            });
             targets = newTargets;
-            localStorage.setItem('cfg_targets_26_clean', JSON.stringify(targets));
-            closeModal('modal-settings'); renderTable(); triggerToast("KONFIGURACJA ZAPISANA");
+            localStorage.setItem('cfg_targets_26', JSON.stringify(targets));
+            closeModal('modal-settings'); renderTable();
         }
 
         function scrollToToday() {
             const d = new Date().getDate();
             const el = document.getElementById(`day-row-${d}`);
-            if(el) {
-                const container = document.getElementById('main-scroll');
-                container.scrollTop = el.offsetTop - (container.offsetHeight / 2);
-            }
+            if(el) el.scrollIntoView({behavior: "smooth", block: "center"});
         }
 
         function triggerToast(txt) {
             const t = document.getElementById('toast');
             t.innerText = txt; t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function exportData() {
             const data = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.includes('26')) data[key] = localStorage.getItem(key);
-            }
-            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-            const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-            a.download = `planer_backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click(); triggerToast("EKSPORT ZAKOŃCZONY");
+            for(let i=0; i<localStorage.length; i++) data[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'daily_hud_backup.json'; a.click();
         }
 
-        function importData(event) {
-            const file = event.target.files[0]; if (!file) return;
+        function importData(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
-                    closeModal('modal-settings'); boot(); triggerToast("DANE ZAIMPORTOWANE");
-                } catch(err) { triggerToast("CRITICAL ERROR: ZŁY PLIK"); }
+            reader.onload = (ev) => {
+                const data = JSON.parse(ev.target.result);
+                Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
+                location.reload();
             };
-            reader.readAsText(file); event.target.value = ""; 
+            reader.readAsText(e.target.files[0]);
         }
 
         boot();
-    </script>
-    
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Silnik Offline Aktywny!'))
-                    .catch(err => console.error('Błąd silnika:', err));
-            });
-        }
     </script>
 </body>
 </html>
