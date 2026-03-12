@@ -11,35 +11,84 @@
 
     <style>
         :root {
-            --bg-light: #f0f4f8; --card-light: #ffffff; --text-light: #1a2b3c; --text-dim-light: #7f8c9d; --border-light: #dbe2e8; --row-hover-light: #f1f5f9; --week-bg-light: #e6f7f7;
-            --bg: #0a0f14; --card: #121a21; --text: #e0e6ed; --text-dim: #64748b; --border: #1e293b; --row-hover: #1a242f; --week-bg: #0f2027;
-            --primary: #008080; --primary-glow: rgba(0, 128, 128, 0.3); --tracker: #8e44ad; --bad: #e67e22; 
+            /* MOTYW CIEMNY (Wojskowa zieleń / Kevlar) */
+            --bg: #0c110f; --card: #131a17; --text: #e0e6ed; --text-dim: #6d8277; --border: #1a2922; --row-hover: #18241e; --week-bg: #101714;
+            --primary: #008080; --primary-glow: rgba(0, 128, 128, 0.4); 
+            --tracker: #8e44ad; --tracker-glow: rgba(142, 68, 173, 0.4);
+            --bad: #e67e22; --crit: #dc143c; --hvt: #ffd700; --hvt-glow: rgba(255, 215, 0, 0.3);
+            --camo-opacity: 0.05;
         }
 
-        [data-theme="light"] { --bg: var(--bg-light); --card: var(--card-light); --text: var(--text-light); --text-dim: var(--text-dim-light); --border: var(--border-light); --row-hover: var(--row-hover-light); --week-bg: var(--week-bg-light); }
+        /* MOTYW JASNY (Jasna Szałwia / Urban Camo dla Pań) */
+        [data-theme="light"] { 
+            --bg: #dee5e2; --card: #ebf0ef; --text: #2c3631; --text-dim: #6d8076; --border: #c2cfc9; --row-hover: #d5deda; --week-bg: #e6ecea;
+            --primary: #007373; --primary-glow: rgba(0, 115, 115, 0.3); 
+            --tracker: #8e44ad; --tracker-glow: rgba(142, 68, 173, 0.3);
+            --bad: #d93838; --crit: #b32424; --hvt: #cc8800; --hvt-glow: rgba(204, 136, 0, 0.3);
+            --camo-opacity: 0.07;
+        }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; min-height: 100vh; -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
-        body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-image: linear-gradient(0deg, rgba(255,255,255,0.05) 50%, transparent 50%); z-index: 9999; background-size: 100% 4px; pointer-events: none; opacity: 0.1; }
-        #watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-20deg); font-size: 10vw; font-weight: 900; color: var(--primary); opacity: 0.05; white-space: nowrap; z-index: -1; pointer-events: none; font-family: 'Audiowide', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; min-height: 100vh; -webkit-font-smoothing: antialiased; transition: background-color 0.4s, color 0.4s; overscroll-behavior-y: none; }
+        
+        /* Scanlines */
+        body::after { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background-image: linear-gradient(0deg, rgba(255,255,255,0.03) 50%, transparent 50%); z-index: 9998; background-size: 100% 4px; pointer-events: none; opacity: 0.1; }
+        
+        /* Camo Moro SVG Pattern */
+        .camo-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath d='M45 15C30 20 10 40 15 60C20 80 50 90 70 75C90 60 100 30 85 15C70 0 60 10 45 15zM150 120C130 125 110 140 120 160C130 180 160 190 180 170C200 150 190 120 170 110C160 105 155 115 150 120zM20 130C5 140 0 170 15 185C30 200 60 195 70 175C80 155 60 130 40 125C30 122 25 125 20 130zM170 20C150 10 120 20 115 40C110 60 130 80 150 85C170 90 190 70 195 50C200 30 180 25 170 20z' fill='%23008080'/%3E%3C/svg%3E"); background-size: 150px; opacity: var(--camo-opacity); z-index: -2; pointer-events: none; transition: opacity 0.4s; }
+        
+        #watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-20deg); font-size: 12vw; font-weight: 900; color: var(--primary); opacity: 0.05; white-space: nowrap; z-index: -1; pointer-events: none; font-family: 'Audiowide', sans-serif; transition: color 0.5s, opacity 0.5s; }
 
-        header { padding: 10px 0; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border); margin-bottom: 15px; background: var(--card); padding: 15px; border-radius: 8px; transition: 0.3s;}
-        .logo { font-family: 'Audiowide', sans-serif; font-size: 1.2rem; letter-spacing: 1px; color: var(--primary); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        /* ZEGAR HUD */
+        #hud-clock { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); letter-spacing: 2px; text-align: center; margin-bottom: 12px; font-weight: 900; background: var(--card); border: 1px solid var(--border); padding: 5px; border-radius: 8px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); display: flex; justify-content: center; align-items: center;}
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* BOOT SPLASH */
+        #boot-splash { position: fixed; inset: 0; background: #080b0a; z-index: 100000; display: flex; flex-direction: column; justify-content: center; padding: 30px; font-family: 'Orbitron'; color: #008080; text-shadow: 0 0 10px rgba(0,128,128,0.5); transition: opacity 0.5s; }
+        #boot-text { font-size: 0.75rem; line-height: 2.2; }
+
+        header { padding: 10px 0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); margin-bottom: 15px; background: var(--card); padding: 15px; border-radius: 8px; transition: 0.3s;}
+        
+        .avatar-container { width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--primary); overflow: hidden; cursor: pointer; background: var(--bg); box-shadow: 0 0 5px var(--primary-glow); transition: 0.3s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .avatar-container:hover { border-color: var(--tracker); box-shadow: 0 0 10px var(--tracker-glow); }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .logo { font-family: 'Audiowide', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--primary); text-shadow: 0 0 8px var(--primary-glow); cursor: default; }
+        .logo:hover { animation: glitch 0.3s linear infinite; }
+        @keyframes glitch { 0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) } }
+        
         .user-level { text-align: right; }
-        .lvl-text { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--text-dim); }
-        .lvl-val { font-family: 'Audiowide'; font-size: 1.4rem; color: var(--text); text-shadow: 0 0 5px var(--primary-glow); }
+        .lvl-text { font-family: 'Orbitron'; font-size: 0.6rem; color: var(--text-dim); margin-bottom: 2px;}
+        .lvl-val { font-family: 'Audiowide'; font-size: 1.6rem; color: var(--text); text-shadow: 0 0 5px var(--primary-glow); line-height: 1;}
+        .rank-text { font-family: 'Orbitron'; font-size: 0.55rem; color: var(--primary); margin-top: 4px; font-weight: 700; letter-spacing: 1px;}
 
-        .progress-container { width: 100%; background: var(--border); height: 10px; margin-bottom: 15px; border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
-        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.8s ease; box-shadow: 0 0 10px var(--primary-glow); }
+        .radar-panel { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        .radar-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .pie-chart { width: 50px; height: 50px; border-radius: 50%; background: conic-gradient(var(--primary) var(--progress, 0%), var(--bg) 0deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--primary-glow); transition: background 1s; }
+        .pie-inner { width: 40px; height: 40px; background: var(--card); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Audiowide'; font-size: 0.7rem; color: var(--text); }
+        .status-box { text-align: right; font-family: 'Orbitron'; }
+        .status-label { font-size: 0.5rem; color: var(--text-dim); letter-spacing: 1px;}
+        .status-val { font-size: 0.8rem; font-weight: 700; text-shadow: 0 0 5px currentColor; transition: color 0.3s; }
+        
+        .status-nom { color: var(--primary); }
+        .status-wrn { color: var(--bad); }
+        .status-crt { color: var(--crit); animation: pulse 1s infinite; }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 8px; }
-        .btn-action, .btn-icon { background: var(--card); color: var(--primary); border: 1px solid var(--primary); padding: 10px 12px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; font-weight: 700; text-transform: uppercase; transition: 0.2s; border-radius: 5px; clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px); white-space: nowrap; text-align: center; }
+        .mission-timer { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; display: none; }
+        .mission-name { font-family: 'Orbitron'; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
+        .mission-days { font-family: 'Audiowide'; font-size: 1rem; color: var(--primary); text-shadow: 0 0 5px var(--primary-glow); }
+
+        .top-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+        .top-bar-bottom { display: flex; gap: 6px; margin-bottom: 15px; }
+        .btn-action, .btn-icon { background: var(--card); color: var(--primary); border: 1px solid var(--primary); padding: 10px 8px; font-family: 'Orbitron'; font-size: 0.55rem; cursor: pointer; font-weight: 700; text-transform: uppercase; transition: 0.2s; border-radius: 5px; clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px); white-space: nowrap; text-align: center; flex-grow: 1; }
         .btn-action:hover, .btn-icon:hover { background: var(--primary); color: #fff; box-shadow: 0 0 10px var(--primary-glow); }
+        .btn-sos { border-color: var(--bad); color: var(--bad); } .btn-sos:hover { background: var(--bad); color:#fff; box-shadow: 0 0 10px var(--bad); }
         select.btn-action { appearance: none; padding-right: 5px; text-align-last: center; outline: none; }
 
-        .table-container { background: var(--card); border: 1px solid var(--border); position: relative; max-height: 52vh; overflow: hidden; display: flex; flex-direction: column; border-radius: 8px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
+        .table-container { background: var(--card); border: 1px solid var(--border); position: relative; max-height: 40vh; overflow: hidden; display: flex; flex-direction: column; border-radius: 8px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
         .scroll-area { overflow: auto; scroll-behavior: smooth; flex-grow: 1;}
         table { width: 100%; border-collapse: collapse; min-width: 650px; }
-        th { background: var(--card); padding: 15px 5px; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; font-family: 'Orbitron'; }
+        th { background: var(--card); padding: 15px 5px; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; font-family: 'Orbitron'; transition: 0.3s;}
         td { padding: 12px 5px; border-bottom: 1px solid var(--border); text-align: center; }
         tr:hover td { background: var(--row-hover); }
         .sticky-col { position: sticky; left: 0; background: var(--card) !important; border-right: 1px solid var(--border) !important; font-family: 'Orbitron'; font-weight: 700; color: var(--text); z-index: 6; }
@@ -48,12 +97,16 @@
         .weekly-row { background: var(--week-bg) !important; font-size: 0.6rem; color: var(--text); font-weight: 800; font-family: 'Orbitron'; }
         .weekly-row td { padding: 8px; border-top: 1px solid var(--primary); border-bottom: 1px solid var(--primary); color: var(--primary); }
 
-        input[type="checkbox"] { appearance: none; width: 26px; height: 26px; border: 2px solid var(--text-dim); background: transparent; cursor: pointer; position: relative; border-radius: 6px; clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px); }
+        .hvt-col { color: var(--hvt) !important; text-shadow: 0 0 8px var(--hvt-glow); box-shadow: inset 0 -3px 0 var(--hvt); }
+
+        input[type="checkbox"] { appearance: none; width: 26px; height: 26px; border: 2px solid var(--text-dim); background: transparent; cursor: pointer; position: relative; border-radius: 6px; clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px); transition: 0.2s; }
         input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
         input[type="checkbox"]:checked::after { content: "✓"; color: #fff; position: absolute; left: 7px; top: 3px; font-weight: 900; }
         .type-bad:checked { background: var(--bad); border-color: var(--bad); }
         .type-tracker:checked { background: var(--tracker); border-color: var(--tracker); }
         .type-tracker:checked::after { content: "■"; font-size: 12px; left: 8px; top: 7px;}
+        .type-blocked { border-color: var(--border) !important; background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--border) 3px, var(--border) 6px) !important; cursor: not-allowed !important; opacity: 0.5; }
+        .type-blocked:checked::after { content: ""; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 12px; margin-top: 15px; }
         .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px 5px; text-align: center; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); border-bottom: 3px solid var(--border); border-radius: 5px; }
@@ -62,20 +115,21 @@
         .stat-label { font-size: 0.45rem; color: var(--text-dim); text-transform: uppercase; margin-top: 8px; display: block; font-family: 'Orbitron';}
         .streak-fire { color: var(--primary); font-size: 0.6rem; margin-top: 5px; font-weight: 800; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; padding: 15px; align-items: center; justify-content: center; backdrop-filter: blur(3px);}
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; padding: 15px; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         .modal-box { background: var(--card); border: 1px solid var(--border); padding: 25px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px); border-radius: 10px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px;}
         .modal-title { margin: 0; font-family: 'Audiowide'; color: var(--primary); font-size: 1rem;}
         .close-btn { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; font-family: 'Orbitron'; }
         
-        textarea, input[type="text"], select.form-select { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 12px; margin-bottom: 15px; outline: none; font-family: 'Orbitron'; font-size: 0.8rem; border-radius: 5px; }
-        textarea { height: 120px; resize: vertical; }
+        textarea, input[type="text"], input[type="number"], input[type="date"], select.form-select { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 12px; margin-bottom: 15px; outline: none; font-family: 'Orbitron'; font-size: 0.8rem; border-radius: 5px; }
+        textarea { height: 70px; resize: vertical; margin-bottom: 5px;}
+        .input-label { font-family: 'Orbitron'; font-size: 0.55rem; color: var(--primary); margin-bottom: 4px; display: block;}
 
-        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 15px 30px; font-family: 'Audiowide'; font-size: 0.8rem; transition: 0.4s; z-index: 9999; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); border-radius: 5px; }
+        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 15px 30px; font-family: 'Audiowide'; font-size: 0.8rem; transition: 0.4s; z-index: 9999; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); border-radius: 5px; text-align: center; white-space: nowrap; }
         #toast.show { bottom: 30px; }
         .note-dot { width: 6px; height: 6px; background: var(--primary); margin: 3px auto 0; display: none; }
         .has-note .note-dot { display: block; }
-
+        
         /* HEATMAPA & ODZNAKI */
         .heat-grid { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 15px; }
         .heat-box { width: 12px; height: 12px; border-radius: 2px; background: var(--border); }
@@ -89,32 +143,80 @@
         .badge-row.unlocked { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
         .badge-title { font-family: 'Orbitron'; font-size: 0.8rem; font-weight: 700; color: var(--text); }
         .badge-desc { font-size: 0.6rem; color: var(--text-dim); }
+        
+        /* OMEGA BTN */
+        .btn-omega { border-color: var(--crit); color: var(--crit); background: transparent; }
+        .btn-omega:hover { background: var(--crit); color: #fff; box-shadow: 0 0 15px rgba(220,20,60,0.6); }
 
+        /* WYKRES KCAL */
+        .chart-container { display: flex; align-items: flex-end; justify-content: space-between; height: 80px; margin-top: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; gap: 5px;}
+        .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%;}
+        .chart-bar { width: 100%; max-width: 20px; background: var(--primary); border-radius: 3px 3px 0 0; min-height: 2px; transition: 0.5s; }
+        .chart-bar.over { background: var(--bad); }
+        .chart-label { font-size: 0.45rem; color: var(--text-dim); margin-top: 4px; font-family: 'Orbitron'; }
+
+        /* CISZA RADIOWA */
+        #radio-timer { font-family: 'Audiowide'; font-size: 4rem; text-align: center; color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); margin: 30px 0; }
+        
+        /* STOPKA ARCHITEKTA */
+        .architect-footer { text-align: center; margin-top: 25px; margin-bottom: 5px; font-family: 'Orbitron'; font-size: 0.55rem; color: var(--text-dim); letter-spacing: 1px; }
+        .architect-footer a { color: var(--primary); text-decoration: none; font-weight: 700; text-shadow: 0 0 5px var(--primary-glow); transition: 0.3s; }
+        .architect-footer a:hover { color: #fff; }
     </style>
 </head>
 <body data-theme="dark">
 
+    <div class="camo-bg"></div>
     <div id="watermark">SYS.2026</div>
 
+    <div id="boot-splash">
+        <div id="boot-text"></div>
+    </div>
+
+    <div id="hud-clock">00<span class="blink">:</span>00<span class="blink">:</span>00</div>
+
     <header>
-        <div class="logo">DAILY_HUD <br><span style="font-size: 0.5rem; color: var(--text-dim); font-family: 'Orbitron'">v5.0.ULTIMATE</span></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="avatar-container" onclick="document.getElementById('avatar-upload').click()">
+                <img id="user-avatar" src="" alt="Avatar">
+                <input type="file" id="avatar-upload" style="display: none;" accept="image/*" onchange="uploadAvatar(event)">
+            </div>
+            <div>
+                <div class="logo">DAILY_HUD <br><span style="font-size: 0.5rem; color: var(--text-dim); font-family: 'Orbitron'">V7.0 GHOST</span></div>
+                <div style="font-family: 'Orbitron'; font-size: 0.45rem; color: var(--text-dim); margin-top: 5px;">ID AGENTA: <span id="agent-id">...</span></div>
+            </div>
+        </div>
         <div class="user-level">
             <div class="lvl-text" id="ui-sys-lvl">POZIOM SYSTEMU</div>
             <div class="lvl-val" id="sys-lvl">01</div>
+            <div class="rank-text" id="sys-rank">REKRUT</div>
         </div>
     </header>
 
-    <div class="progress-container">
-        <div class="progress-bar" id="month-progress"></div>
+    <div class="radar-panel">
+        <div class="radar-top">
+            <div class="pie-chart" id="pie-chart"><div class="pie-inner" id="pie-val">0%</div></div>
+            <div class="status-box">
+                <div class="status-label">DEFCON STATUS</div>
+                <div class="status-val status-nom" id="threat-status">[ STATUS: NOMINALNY ]</div>
+            </div>
+        </div>
+        <div class="mission-timer" id="mission-container">
+            <div class="mission-name" id="mission-name">CEL GŁÓWNY: ...</div>
+            <div class="mission-days" id="mission-days">0 DNI</div>
+        </div>
     </div>
 
     <div class="top-bar">
+        <button class="btn-icon" onclick="openBio()">[ BIO-SKAN ]</button>
+        <button class="btn-icon" style="color:var(--tracker); border-color:var(--tracker);" onclick="openRadio()">[ CISZA ]</button>
+        <button class="btn-icon btn-sos" onclick="triggerSOS()">[ S.O.S ]</button>
         <button class="btn-icon" onclick="openSettings()" id="ui-config">[ OPCJE ]</button>
-        <div style="display:flex; gap:5px; flex-grow:1;">
-            <select id="month-select" class="btn-action" style="flex:2; padding:8px 2px;" onchange="changeDate()"></select>
-            <select id="year-select" class="btn-action" style="flex:1; padding:8px 2px;" onchange="changeDate()"></select>
-        </div>
-        <button class="btn-action" onclick="scrollToToday()" id="ui-sync">DZISIAJ</button>
+    </div>
+    <div class="top-bar-bottom">
+        <select id="month-select" class="btn-action" style="flex:2;" onchange="changeDate()"></select>
+        <select id="year-select" class="btn-action" style="flex:1;" onchange="changeDate()"></select>
+        <button class="btn-action" onclick="scrollToToday()" id="ui-sync" style="flex:1;">DZISIAJ</button>
     </div>
 
     <div class="table-container">
@@ -130,16 +232,53 @@
     
     <button class="btn-action" style="width:100%; margin-top:15px; border-style:dashed;" onclick="openProfile()" id="ui-profile-btn">[ RAPORT ROCZNY & ODZNAKI ]</button>
 
-    <div id="toast">SYSTEM GOTOWY</div>
-
     <div id="modal-briefing" class="modal">
-        <div class="modal-box" style="text-align: center; border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow);">
-            <h2 style="font-family: 'Audiowide'; color: var(--primary); margin-top: 0;">PORANNY BRIEFING</h2>
-            <div style="font-size: 3rem; margin: 15px 0;">🎯</div>
-            <p id="briefing-text" style="font-size: 0.9rem; line-height: 1.5; color: var(--text); margin-bottom: 25px;">
-                Analiza systemu zakończona. Masz dziś cele do zrealizowania. Utrzymaj dyscyplinę.
-            </p>
+        <div class="modal-box" style="text-align: left; border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); font-family: 'Orbitron';">
+            <h2 style="font-family: 'Audiowide'; color: var(--primary); margin-top: 0;">TERMINAL ODPRAWY</h2>
+            <div style="width: 100%; height: 1px; background: var(--primary); margin-bottom: 15px;"></div>
+            <p id="briefing-text" style="font-size: 0.8rem; line-height: 1.6; color: var(--text); margin-bottom: 25px; min-height: 80px;"></p>
             <button class="btn-action" style="width:100%; padding:15px;" onclick="closeModal('modal-briefing')">PRZYJĄŁEM (ZAMKNIJ)</button>
+        </div>
+    </div>
+
+    <div id="modal-bio" class="modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">BIO-SKANER</h3>
+                <button class="close-btn" onclick="closeModal('modal-bio')">×</button>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div style="flex: 1;"><span class="input-label">WAGA (KG)</span><input type="number" id="bio-weight" step="0.1" placeholder="0.0"></div>
+                <div style="flex: 1;"><span class="input-label">TKANKA TŁUSZ. (%)</span><input type="number" id="bio-bf" step="0.1" placeholder="0.0"></div>
+            </div>
+
+            <button class="btn-action" style="width:100%; margin-bottom:15px; background: rgba(0,128,128,0.1);" onclick="syncWaterBio()">💧 ZAZNACZ WODĘ NA DZIŚ</button>
+
+            <div style="border: 1px solid var(--border); padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <span class="input-label" style="text-align: center; font-size:0.7rem;">STATUS ENERGETYCZNY (KCAL)</span>
+                <div style="display: flex; gap: 10px; margin-top:10px;">
+                    <div style="flex: 1;"><span class="input-label">CEL (KCAL)</span><input type="number" id="bio-kcal-goal" placeholder="2500"></div>
+                    <div style="flex: 1;"><span class="input-label">SPOŻYTO (KCAL)</span><input type="number" id="bio-kcal-done" placeholder="2450"></div>
+                </div>
+                <div class="chart-container" id="kcal-chart"></div>
+            </div>
+
+            <span class="input-label">DZIENNIK WYMIARÓW / NOTATKI</span>
+            <textarea id="bio-notes" placeholder="Np. Biceps: 40cm, Pas: 85cm..."></textarea>
+            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveBio()">ZAPISZ DANE</button>
+        </div>
+    </div>
+
+    <div id="modal-radio" class="modal">
+        <div class="modal-box" style="text-align: center;">
+            <h3 class="modal-title" style="color: var(--tracker);">CISZA RADIOWA</h3>
+            <p style="font-family: 'Orbitron'; font-size: 0.6rem; color: var(--text-dim);">ODETNIJ SIĘ. WYKONAJ ZADANIE.</p>
+            <div id="radio-timer">25:00</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-action" style="flex:1; border-color:var(--tracker); color:var(--tracker);" id="btn-radio-start" onclick="startRadio()">START</button>
+                <button class="btn-action" style="flex:1; border-color:var(--bad); color:var(--bad);" onclick="stopRadio()">PRZERWIJ</button>
+            </div>
         </div>
     </div>
 
@@ -149,13 +288,9 @@
                 <h3 class="modal-title" id="ui-profile-title">AKTYWNOŚĆ ROCZNA</h3>
                 <button class="close-btn" onclick="closeModal('modal-profile')">×</button>
             </div>
-            
             <div style="text-align: center; font-family: 'Orbitron'; font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px;">MAPA AKTYWNOŚCI <span id="heatmap-year">2026</span></div>
             <div class="heat-grid" id="heatmap-container"></div>
-            
-            <div class="modal-header" style="margin-top: 30px;">
-                <h3 class="modal-title">ODZNAKI TAKTYCZNE</h3>
-            </div>
+            <div class="modal-header" style="margin-top: 30px;"><h3 class="modal-title">ODZNAKI TAKTYCZNE</h3></div>
             <div id="badges-container"></div>
         </div>
     </div>
@@ -163,10 +298,24 @@
     <div id="modal-note" class="modal">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 class="modal-title" id="note-modal-title">RAPORT</h3>
+                <h3 class="modal-title" id="note-modal-title">DEBRIEFING (SITREP)</h3>
                 <button class="close-btn" onclick="closeModal('modal-note')">×</button>
             </div>
-            <textarea id="note-input"></textarea>
+            <span class="input-label">🏆 ZWYCIĘSTWO DNIA</span>
+            <textarea id="note-victory" placeholder="Co poszło dobrze?"></textarea>
+            
+            <span class="input-label" style="color:var(--bad);">⚠️ ZAGROŻENIE NA JUTRO</span>
+            <textarea id="note-threat" placeholder="Co może popsuć szyki?"></textarea>
+            
+            <span class="input-label" style="color:var(--hvt);">⭐️ MORALE</span>
+            <select class="form-select" id="note-morale">
+                <option value="5">5/5 - Niezniszczalny</option>
+                <option value="4">4/5 - Gotowy do walki</option>
+                <option value="3" selected>3/5 - Stabilnie</option>
+                <option value="2">2/5 - Braki w energii</option>
+                <option value="1">1/5 - System na wyczerpaniu</option>
+            </select>
+
             <button class="btn-action" style="width:100%; padding:15px;" onclick="saveNote()" id="ui-save-log">ZATWIERDŹ</button>
         </div>
     </div>
@@ -183,36 +332,68 @@
                 <button class="btn-icon" style="flex:1;" onclick="toggleLang()">JĘZYK PL/EN</button>
             </div>
 
-            <div id="targets-editor"></div>
-            <button class="btn-icon" style="width:100%; margin-bottom: 20px; border-style: dashed;" onclick="addNewTargetField()" id="ui-add-vector">+ DODAJ WEKTOR</button>
-            <button class="btn-action" style="width:100%; padding:15px;" onclick="saveTargets()" id="ui-save-proto">ZAPISZ PROTOKÓŁ</button>
+            <div style="border: 1px solid var(--primary); padding: 10px; border-radius: 5px; margin-bottom: 20px; background: rgba(0,128,128,0.05);">
+                <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: var(--primary); margin-bottom: 10px; font-weight: 700;">ODLICZANIE TAKTYCZNE (MISJA)</div>
+                <input type="text" id="mission-input-name" placeholder="Nazwa celu (np. Zawody, Wakacje)">
+                <input type="date" id="mission-input-date">
+                <button class="btn-action" style="width:100%; padding:10px;" onclick="saveMission()">ZATWIERDŹ MISJĘ</button>
+            </div>
 
-            <div class="modal-header" style="margin-top: 30px;"><h3 class="modal-title" id="ui-db-title">BAZA DANYCH</h3></div>
+            <div style="font-family: 'Orbitron'; font-size: 0.6rem; color: var(--text-dim); margin-bottom: 10px;">WEKTORY CELÓW (B = Zablokowany)</div>
+            <div id="targets-editor"></div>
+            <button class="btn-icon" style="width:100%; margin-bottom: 10px; border-style: dashed;" onclick="addNewTargetField()" id="ui-add-vector">+ DODAJ WEKTOR</button>
+            
+            <div style="margin-bottom: 20px;">
+                <span class="input-label" style="color:var(--hvt);">CEL PRIORYTETOWY (HVT)</span>
+                <select id="hvt-selector" class="form-select" style="border-color:var(--hvt); color:var(--hvt);"></select>
+            </div>
+
+            <button class="btn-action" style="width:100%; padding:15px; margin-bottom:30px;" onclick="saveTargets()" id="ui-save-proto">ZAPISZ PROTOKÓŁ</button>
+
+            <div class="modal-header"><h3 class="modal-title" id="ui-db-title">BAZA DANYCH</h3></div>
             <div style="display: flex; gap: 10px; margin-bottom:10px;">
-                <button class="btn-icon" style="flex:1;" onclick="exportData()" id="ui-export">EKSPORT (JSON)</button>
+                <button class="btn-icon" style="flex:1;" onclick="exportData()" id="ui-export">EKSPORT JSON</button>
                 <button class="btn-icon" style="flex:1;" onclick="document.getElementById('import-file').click()" id="ui-import">IMPORT</button>
                 <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
             </div>
-            <button class="btn-action" style="width:100%; border-color: var(--tracker); color: var(--tracker);" onclick="exportCSV()" id="ui-csv">EKS. CSV (EXCEL)</button>
+            <button class="btn-action" style="width:100%; margin-bottom: 20px; border-color: var(--tracker); color: var(--tracker);" onclick="exportCSV()" id="ui-csv">EKS. CSV (EXCEL)</button>
+            
+            <button class="btn-action btn-omega" style="width:100%; border-style: dashed;" onclick="triggerOmega()">[ PROTOKÓŁ OMEGA - RESET ]</button>
+
+            <div class="architect-footer">
+                SYSTEM ENGINEERED BY <a href="https://instagram.com/Kryspinowskyy" target="_blank">@KRYSPINOWSKYY</a> // 2026
+            </div>
         </div>
     </div>
 
     <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const QUOTES = [
+            "Dyscyplina równa się wolność. Odbiór.",
+            "Ból jest tymczasowy. Rezygnacja trwa wiecznie.",
+            "Nie narzekaj, że masz pod górkę, skoro zmierzasz na szczyt.",
+            "Twoje wymówki nie mają tu żadnej władzy.",
+            "Sukces to suma małych wysiłków powtarzanych dzień po dniu.",
+            "Wygrywa ten, kto wstaje rano, kiedy najbardziej mu się nie chce.",
+            "Zrób to, co musisz, żebyś mógł robić to, co chcesz."
+        ];
+
         const TRANSLATIONS = {
             pl: {
-                sys_lvl: "POZIOM SYSTEMU", config: "[ OPCJE ]", sync: "DZISIAJ", raport: "RAPORT DZIENNY", save_log: "ZATWIERDŹ LOG", settings: "USTAWIENIA", add_vector: "+ DODAJ WEKTOR", save_proto: "ZAPISZ PROTOKÓŁ", db: "BAZA DANYCH", export: "EKS. JSON", import: "IMPORT", csv: "EKS. CSV", ready: "SYSTEM GOTOWY", saved: "ZAPISANO", day: "Dzień", profile_btn: "[ RAPORT ROCZNY & ODZNAKI ]", profile_title: "RAPORT TAKTYCZNY",
+                sys_lvl: "POZIOM SYSTEMU", config: "[ OPCJE ]", sync: "DZISIAJ", raport: "RAPORT DZIENNY", save_log: "ZATWIERDŹ", settings: "USTAWIENIA", add_vector: "+ DODAJ WEKTOR", save_proto: "ZAPISZ PROTOKÓŁ", db: "BAZA DANYCH", export: "EKS. JSON", import: "IMPORT", csv: "EKS. CSV", ready: "SYSTEM GOTOWY", saved: "ZAPISANO", day: "Dzień", profile_btn: "[ RAPORT ROCZNY & ODZNAKI ]", profile_title: "RAPORT TAKTYCZNY",
                 months: ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"],
-                briefing: "Witaj. Masz dziś <b>{N}</b> wektorów do odhaczenia. Utrzymaj dyscyplinę i zrób co do Ciebie należy."
+                briefing: "Analiza systemu ukończona... \nMasz dziś do wykonania: {N} celów. \n\n\"{Q}\""
             },
             en: {
-                sys_lvl: "SYSTEM LEVEL", config: "[ SETTINGS ]", sync: "TODAY", raport: "DAILY REPORT", save_log: "SUBMIT LOG", settings: "SETTINGS", add_vector: "+ ADD VECTOR", save_proto: "SAVE PROTOCOL", db: "DATABASE", export: "EXP. JSON", import: "IMPORT", csv: "EXP. CSV", ready: "SYSTEM READY", saved: "SAVED", day: "Day", profile_btn: "[ YEARLY REPORT & BADGES ]", profile_title: "TACTICAL REPORT",
+                sys_lvl: "SYSTEM LEVEL", config: "[ SETTINGS ]", sync: "TODAY", raport: "DAILY REPORT", save_log: "SUBMIT", settings: "SETTINGS", add_vector: "+ ADD VECTOR", save_proto: "SAVE PROTOCOL", db: "DATABASE", export: "EXP. JSON", import: "IMPORT", csv: "EXP. CSV", ready: "SYSTEM READY", saved: "SAVED", day: "Day", profile_btn: "[ YEARLY REPORT & BADGES ]", profile_title: "TACTICAL REPORT",
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-                briefing: "Welcome. You have <b>{N}</b> vectors to complete today. Maintain discipline and get it done."
+                briefing: "System analysis complete... \nYou have {N} targets today. \n\n\"{Q}\""
             }
         };
 
         const BADGES_DEF = [
-            { id: 'b_first', ico: '🔰', namePL: 'Rekrut', nameEN: 'Recruit', descPL: 'Rozpocznij korzystanie z systemu (Poziom 2)', descEN: 'Start using the system (Level 2)', reqLvl: 2 },
+            { id: 'b_first', ico: '🔰', namePL: 'Rekrut', nameEN: 'Recruit', descPL: 'Rozpocznij (Lvl 2)', descEN: 'Start (Lvl 2)', reqLvl: 2 },
             { id: 'b_vet', ico: '🎖️', namePL: 'Weteran', nameEN: 'Veteran', descPL: 'Osiągnij Poziom 10', descEN: 'Reach Level 10', reqLvl: 10 },
             { id: 'b_term', ico: '🤖', namePL: 'Terminator', nameEN: 'Terminator', descPL: 'Osiągnij Poziom 50', descEN: 'Reach Level 50', reqLvl: 50 },
             { id: 'b_ghost', ico: '👻', namePL: 'Duch', nameEN: 'Ghost', descPL: 'Osiągnij Poziom 100', descEN: 'Reach Level 100', reqLvl: 100 }
@@ -221,8 +402,70 @@
         let currentLang = localStorage.getItem('cfg_lang') || 'pl';
         let targets = []; let currM = new Date().getMonth(); let currY = new Date().getFullYear();
         let activeNoteKey = ""; let globalExp = 0;
+        let radioInterval; let radioTime = 1500;
 
         function getShortY(y) { return (y || currY).toString().slice(-2); }
+
+        // --- ZEGAR HUD ---
+        function updateClock() {
+            const now = new Date();
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const s = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('hud-clock').innerHTML = `${h}<span class="blink">:</span>${m}<span class="blink">:</span>${s}`;
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // --- BOOT SPLASH ---
+        function runBootSplash() {
+            if (sessionStorage.getItem('booted_v7')) { document.getElementById('boot-splash').style.display = 'none'; return; }
+            const lines = [
+                "> INICJALIZACJA RDZENIA... OK",
+                "> ŁADOWANIE MODUŁÓW TAKTYCZNYCH... OK",
+                "> ARCHITEKT SYSTEMU: @KRYSPINOWSKYY",
+                "> ACCESS GRANTED."
+            ];
+            const el = document.getElementById('boot-text');
+            let delay = 0;
+            lines.forEach((line) => {
+                setTimeout(() => { el.innerHTML += line + "<br>"; }, delay);
+                delay += 350;
+            });
+            setTimeout(() => { 
+                document.getElementById('boot-splash').style.opacity = '0'; 
+                setTimeout(() => document.getElementById('boot-splash').style.display = 'none', 500);
+                sessionStorage.setItem('booted_v7', '1');
+            }, delay + 600);
+        }
+
+        function playBeep(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            if(type === 'good' || type === 'tracker') { osc.frequency.value = 800; osc.type = 'sine'; } 
+            else if (type === 'bad') { osc.frequency.value = 150; osc.type = 'sawtooth'; }
+            else if (type === 'alarm') { osc.frequency.value = 1000; osc.type = 'square'; }
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + (type==='alarm'?0.5:0.1));
+            osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + (type==='alarm'?0.5:0.1));
+        }
+
+        function triggerVibration(type) {
+            if ("vibrate" in navigator) {
+                if (type === 'good' || type === 'tracker') navigator.vibrate(50);
+                if (type === 'bad') navigator.vibrate([50, 100, 50]); 
+                if (type === 'alarm') navigator.vibrate([200, 100, 200, 100, 200]);
+            }
+        }
+
+        function getRankName(lvl) {
+            if(lvl < 5) return currentLang === 'pl' ? 'REKRUT' : 'RECRUIT';
+            if(lvl < 10) return currentLang === 'pl' ? 'KAPRAL' : 'CORPORAL';
+            if(lvl < 25) return currentLang === 'pl' ? 'SIERŻANT' : 'SERGEANT';
+            if(lvl < 50) return currentLang === 'pl' ? 'PORUCZNIK' : 'LIEUTENANT';
+            if(lvl < 100) return currentLang === 'pl' ? 'KAPITAN' : 'CAPTAIN';
+            return currentLang === 'pl' ? 'KOMANDOR' : 'COMMANDER';
+        }
 
         function updateUIStrings() {
             const l = TRANSLATIONS[currentLang];
@@ -237,18 +480,57 @@
         function toggleTheme() { const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.body.setAttribute('data-theme', theme); localStorage.setItem('cfg_theme', theme); }
         function toggleLang() { currentLang = currentLang === 'pl' ? 'en' : 'pl'; localStorage.setItem('cfg_lang', currentLang); updateUIStrings(); renderDateSelectors(); renderTable(); }
 
+        function loadAvatar() {
+            const savedAvatar = localStorage.getItem('cfg_avatar');
+            if (savedAvatar) { document.getElementById('user-avatar').src = savedAvatar; } 
+            else { document.getElementById('user-avatar').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23008080'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E"; }
+        }
+
+        function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) { triggerToast("PLIK ZA DUŻY! (MAX 2MB)"); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    try { localStorage.setItem('cfg_avatar', base64); document.getElementById('user-avatar').src = base64; triggerToast("ZDJĘCIE ZAAKCEPTOWANE"); } 
+                    catch (error) { triggerToast("BŁĄD ZAPISU (BRAK MIEJSCA)"); }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function boot() {
+            runBootSplash();
             document.body.setAttribute('data-theme', localStorage.getItem('cfg_theme') || 'dark');
-            loadTargets(); updateUIStrings(); renderDateSelectors(); renderTable();
-            checkBriefing();
+            let agentId = localStorage.getItem('cfg_agent_id');
+            if (!agentId) { agentId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); localStorage.setItem('cfg_agent_id', agentId); }
+            document.getElementById('agent-id').innerText = agentId;
+
+            loadAvatar(); loadTargets(); updateUIStrings(); renderDateSelectors(); renderTable();
+            checkBriefing(); loadMission();
             if(new Date().getMonth() === currM && new Date().getFullYear() === currY) setTimeout(scrollToToday, 500);
-            setTimeout(() => triggerToast(TRANSLATIONS[currentLang].ready), 500);
+            setTimeout(() => triggerToast(TRANSLATIONS[currentLang].ready), 1000);
         }
 
         function loadTargets() {
             const saved = localStorage.getItem('cfg_targets_26_clean');
-            if (saved) { try { targets = JSON.parse(saved); } catch(e) { targets = [{id:'tr',ico:'🏋️',lab:'Trening',type:'good'},{id:'wo',ico:'💧',lab:'Woda',type:'good'}]; } } 
-            else { targets = [{id:'tr',ico:'🏋️',lab:'Trening',type:'good'},{id:'wo',ico:'💧',lab:'Woda',type:'good'},{id:'su',ico:'💊',lab:'Suple',type:'good'},{id:'ro',ico:'📚',lab:'Rozwój',type:'good'},{id:'uz',ico:'🍺',lab:'Zło',type:'bad'}]; }
+            if (saved) { try { targets = JSON.parse(saved); } catch(e) { targets = []; } } 
+            
+            if (!targets.length || !localStorage.getItem('v51_migrated')) {
+                const defaults = [
+                    {id:'tr',ico:'🏋️',lab:'Trening',type:'good'}, {id:'wo',ico:'💧',lab:'Woda',type:'good'},
+                    {id:'su',ico:'💊',lab:'Suple',type:'good'}, {id:'ro',ico:'📚',lab:'Rozwój',type:'good'},
+                    {id:'pe',ico:'🩸',lab:'Okres',type:'blocked'}, {id:'fa',ico:'👨‍👩‍👧‍👦',lab:'Rodzina',type:'good'},
+                    {id:'ex',ico:'🚀',lab:'Ekstra',type:'good'}, {id:'ga',ico:'🎮',lab:'Gry',type:'bad'}, {id:'uz',ico:'🍺',lab:'Zło',type:'bad'}
+                ];
+                if(targets.length > 0) { 
+                    const existingIds = targets.map(t => t.id);
+                    defaults.forEach(d => { if(!existingIds.includes(d.id)) targets.push(d); });
+                } else { targets = defaults; }
+                localStorage.setItem('cfg_targets_26_clean', JSON.stringify(targets));
+                localStorage.setItem('v51_migrated', '1');
+            }
         }
 
         function checkBriefing() {
@@ -256,11 +538,21 @@
             const todayKey = `briefing_shown_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
             if(!localStorage.getItem(todayKey)) {
                 let goodTargetsCount = targets.filter(t => t.type === 'good').length;
-                let txt = TRANSLATIONS[currentLang].briefing.replace('{N}', goodTargetsCount);
-                document.getElementById('briefing-text').innerHTML = txt;
+                let randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+                let txt = TRANSLATIONS[currentLang].briefing.replace('{N}', goodTargetsCount).replace('{Q}', randomQuote);
                 document.getElementById('modal-briefing').style.display = 'flex';
+                runBriefingTypewriter(txt);
                 localStorage.setItem(todayKey, '1');
             }
+        }
+
+        function runBriefingTypewriter(text) {
+            const el = document.getElementById('briefing-text'); el.innerHTML = ""; let i = 0;
+            function type() {
+                if (i < text.length) { el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i); i++; setTimeout(type, 30); } 
+                else { el.innerHTML += '<span class="cursor-blink">█</span>'; }
+            }
+            setTimeout(type, 800); // Wait for splash screen
         }
 
         function renderDateSelectors() {
@@ -268,14 +560,18 @@
             mSel.innerHTML = ""; ySel.innerHTML = "";
             TRANSLATIONS[currentLang].months.forEach((m, i) => { const opt = document.createElement('option'); opt.value = i; opt.innerText = m.toUpperCase(); if(i === currM) opt.selected = true; mSel.appendChild(opt); });
             for(let y = 2024; y <= 2030; y++) { const opt = document.createElement('option'); opt.value = y; opt.innerText = y; if(y === currY) opt.selected = true; ySel.appendChild(opt); }
-            document.getElementById('watermark').innerText = `SYS.${currY}`;
         }
 
         function changeDate() { currM = parseInt(document.getElementById('month-select').value); currY = parseInt(document.getElementById('year-select').value); renderDateSelectors(); renderTable(); }
 
         function renderTable() {
+            const hvtId = localStorage.getItem('cfg_hvt');
             const head = document.getElementById('thead'); head.innerHTML = `<th class="sticky-col">${TRANSLATIONS[currentLang].day}</th>`;
-            targets.forEach(t => head.innerHTML += `<th>${t.ico}<br>${t.lab}</th>`);
+            targets.forEach(t => { 
+                const isHvt = t.id === hvtId ? 'hvt-col' : '';
+                head.innerHTML += `<th class="${isHvt}" style="${t.type==='blocked'?'opacity:0.4':''}">${t.ico}<br>${t.lab}</th>`; 
+            });
+            
             const body = document.getElementById('tbody'); body.innerHTML = "";
             const daysCount = new Date(currY, currM + 1, 0).getDate();
             let weeklySums = {}; targets.forEach(t => weeklySums[t.id] = 0);
@@ -283,36 +579,47 @@
             for (let d = 1; d <= daysCount; d++) {
                 const date = new Date(currY, currM, d);
                 const tr = document.createElement('tr'); tr.id = `day-row-${d}`;
-                if(new Date().getDate() === d && new Date().getMonth() === currM && new Date().getFullYear() === currY) tr.style.background = "var(--primary-glow)";
+                if(new Date().getDate() === d && new Date().getMonth() === currM && new Date().getFullYear() === currY) tr.style.background = "var(--row-hover)";
 
                 const hasNote = localStorage.getItem(`n${getShortY()}_${currM}_${d}`) ? 'has-note' : '';
                 let html = `<td class="sticky-col ${hasNote}" onclick="openNoteModal(${d})">${d.toString().padStart(2,'0')}<span>${date.toLocaleDateString(currentLang==='pl'?'pl-PL':'en-US', {weekday:'short'}).toUpperCase()}</span><div class="note-dot"></div></td>`;
                 
                 targets.forEach(t => {
                     const isChecked = localStorage.getItem(`c${getShortY()}_${currM}_${d}_${t.id}`) === '1';
-                    if (isChecked) weeklySums[t.id]++;
-                    html += `<td><input type="checkbox" ${isChecked ? 'checked' : ''} class="type-${t.type}" onchange="handleCheck(${d},'${t.id}',this.checked, '${t.type}')"></td>`;
+                    if (isChecked && t.type !== 'blocked') weeklySums[t.id]++;
+                    if (t.type === 'blocked') { html += `<td><input type="checkbox" disabled class="type-blocked"></td>`; } 
+                    else { html += `<td><input type="checkbox" ${isChecked ? 'checked' : ''} class="type-${t.type}" onchange="handleCheck(${d},'${t.id}',this.checked, '${t.type}')"></td>`; }
                 });
                 tr.innerHTML = html; body.appendChild(tr);
 
                 if (date.getDay() === 0 || d === daysCount) {
                     const sep = document.createElement('tr'); sep.className = "weekly-row";
                     let sumHtml = `<td class="sticky-col" style="background: var(--week-bg) !important;">W${Math.ceil(d/7)}</td>`;
-                    targets.forEach(t => { sumHtml += `<td style="${(t.type==='bad'&&weeklySums[t.id]>1)?'color:var(--bad)':''}">${weeklySums[t.id]>0?weeklySums[t.id]:'-'}</td>`; weeklySums[t.id]=0; });
+                    targets.forEach(t => { 
+                        if(t.type === 'blocked') { sumHtml += `<td style="opacity:0.4">-</td>`; }
+                        else { sumHtml += `<td style="${(t.type==='bad'&&weeklySums[t.id]>1)?'color:var(--bad)':''}">${weeklySums[t.id]>0?weeklySums[t.id]:'-'}</td>`; }
+                        weeklySums[t.id]=0; 
+                    });
                     sep.innerHTML = sumHtml; body.appendChild(sep);
                 }
             }
             updateEngine();
         }
 
-        function handleCheck(d, id, val, type) { const key = `c${getShortY()}_${currM}_${d}_${id}`; val ? localStorage.setItem(key, '1') : localStorage.removeItem(key); updateEngine(); }
+        function handleCheck(d, id, val, type) { 
+            if(type === 'blocked') return;
+            const key = `c${getShortY()}_${currM}_${d}_${id}`; 
+            val ? localStorage.setItem(key, '1') : localStorage.removeItem(key); 
+            if(val) { playBeep(type); triggerVibration(type); }
+            updateEngine(); 
+        }
 
         function updateEngine() {
             const area = document.getElementById('stats-area'); area.innerHTML = "";
             const daysCount = new Date(currY, currM + 1, 0).getDate();
-            let totalGood = 0; let totalDone = 0; globalExp = 0; 
+            let totalGood = 0; let totalDone = 0; globalExp = 0; let badTodayCount = 0;
+            const todayD = new Date().getDate();
             
-            // Calc global EXP across all years/months
             for (let i = 0; i < localStorage.length; i++) {
                 const k = localStorage.key(i);
                 if (k.startsWith('c') && localStorage.getItem(k) === '1') {
@@ -322,25 +629,233 @@
             }
             const lvl = Math.floor(globalExp / 10) + 1;
             document.getElementById('sys-lvl').innerText = lvl.toString().padStart(2, '0');
+            document.getElementById('sys-rank').innerText = getRankName(lvl);
 
             targets.forEach(t => {
+                if(t.type === 'blocked') return; 
+                
                 let count = 0; let streak = 0; let maxStreak = 0;
-                for(let d=1; d<=daysCount; d++) { if(localStorage.getItem(`c${getShortY()}_${currM}_${d}_${t.id}`)) { count++; streak++; if(streak>maxStreak) maxStreak=streak; } else { streak=0; } }
+                for(let d=1; d<=daysCount; d++) { 
+                    const isChecked = localStorage.getItem(`c${getShortY()}_${currM}_${d}_${t.id}`) === '1';
+                    if(isChecked) { count++; streak++; if(streak>maxStreak) maxStreak=streak; } else { streak=0; } 
+                }
+                
                 if (t.type === 'good') { totalGood += daysCount; totalDone += count; }
+                if (t.type === 'bad' && localStorage.getItem(`c${getShortY()}_${currM}_${todayD}_${t.id}`) === '1' && currM === new Date().getMonth() && currY === new Date().getFullYear()) { badTodayCount++; }
+
                 const isBadLimit = t.type === 'bad' && count > 4;
                 const card = document.createElement('div'); card.className = `stat-card ${maxStreak>=3&&t.type==='good'?'active-streak':''}`; card.style.borderBottomColor = isBadLimit?'var(--bad)':'';
                 card.innerHTML = `<span class="stat-val" style="color:${isBadLimit?'var(--bad)':(t.type==='tracker'?'var(--tracker)':'var(--text)')}">${(t.type==='bad'?(4-count):count).toString().padStart(2,'0')}</span><span class="stat-label">${t.type==='bad'?'LIMIT':t.lab}</span>${maxStreak>=3&&t.type==='good'?`<div class="streak-fire">COMBO x${maxStreak}</div>`:''}`;
                 area.appendChild(card);
             });
-            document.getElementById('month-progress').style.width = `${totalGood===0?0:Math.round((totalDone/totalGood)*100)}%`;
+
+            const progPercent = totalGood === 0 ? 0 : Math.round((totalDone/totalGood)*100);
+            document.getElementById('pie-chart').style.setProperty('--progress', `${progPercent}%`);
+            document.getElementById('pie-val').innerText = `${progPercent}%`;
+
+            const threatEl = document.getElementById('threat-status');
+            const waterEl = document.getElementById('watermark');
+            threatEl.className = 'status-val';
+            
+            if (badTodayCount === 0) {
+                threatEl.classList.add('status-nom'); threatEl.innerText = '[ STATUS: NOMINALNY ]';
+                waterEl.innerText = `SYS.${currY}`; waterEl.style.color = "var(--primary)"; waterEl.style.opacity = "0.05";
+            } else if (badTodayCount === 1) {
+                threatEl.classList.add('status-wrn'); threatEl.innerText = '[ STATUS: OSTRZEŻENIE ]';
+                waterEl.innerText = `WARNING`; waterEl.style.color = "var(--bad)"; waterEl.style.opacity = "0.1";
+            } else {
+                threatEl.classList.add('status-crt'); threatEl.innerText = '[ STATUS: KRYTYCZNY ]';
+                waterEl.innerText = `BREACH`; waterEl.style.color = "var(--crit)"; waterEl.style.opacity = "0.15";
+            }
         }
 
+        // --- BIO SKANER & KCAL CHART ---
+        function openBio() {
+            let bioData = { w: "", bf: "", notes: "" };
+            try { const saved = localStorage.getItem('cfg_bio_data'); if(saved) bioData = JSON.parse(saved); } catch(e) {}
+            document.getElementById('bio-weight').value = bioData.w;
+            document.getElementById('bio-bf').value = bioData.bf;
+            document.getElementById('bio-notes').value = bioData.notes;
+            
+            const d = new Date(); const tKey = `k${getShortY()}_${d.getMonth()}_${d.getDate()}`;
+            let kData = { g: "", c: "" };
+            try { const s = localStorage.getItem(tKey); if(s) kData = JSON.parse(s); } catch(e){}
+            document.getElementById('bio-kcal-goal').value = kData.g;
+            document.getElementById('bio-kcal-done').value = kData.c;
+
+            renderKcalChart();
+            document.getElementById('modal-bio').style.display = 'flex';
+        }
+        
+        function renderKcalChart() {
+            const chart = document.getElementById('kcal-chart'); chart.innerHTML = "";
+            for(let i=6; i>=0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                const kKey = `k${getShortY(d.getFullYear())}_${d.getMonth()}_${d.getDate()}`;
+                let k = {g:0, c:0}; try { const s = localStorage.getItem(kKey); if(s) k = JSON.parse(s); } catch(e){}
+                
+                let percent = 0; let over = false;
+                if(k.g > 0 && k.c > 0) { percent = (k.c / k.g) * 100; if(percent > 100) { over = true; percent = 100; } }
+                if(k.g > 0 && k.c == 0) percent = 2; 
+
+                const w = document.createElement('div'); w.className = "chart-bar-wrap";
+                w.innerHTML = `<div class="chart-bar ${over?'over':''}" style="height:${percent}%"></div><div class="chart-label">${d.toLocaleDateString('pl-PL',{weekday:'short'})}</div>`;
+                chart.appendChild(w);
+            }
+        }
+
+        function saveBio() {
+            const w = document.getElementById('bio-weight').value;
+            const bf = document.getElementById('bio-bf').value;
+            const notes = document.getElementById('bio-notes').value;
+            localStorage.setItem('cfg_bio_data', JSON.stringify({ w, bf, notes }));
+
+            const kg = document.getElementById('bio-kcal-goal').value;
+            const kc = document.getElementById('bio-kcal-done').value;
+            if(kg || kc) {
+                const d = new Date(); const tKey = `k${getShortY()}_${d.getMonth()}_${d.getDate()}`;
+                localStorage.setItem(tKey, JSON.stringify({g: kg, c: kc}));
+            }
+            closeModal('modal-bio'); triggerToast("ZAPISANO DANE BIO");
+        }
+
+        function syncWaterBio() {
+            const wTarget = targets.find(t => t.id === 'wo');
+            if(wTarget) {
+                const d = new Date().getDate(); const m = new Date().getMonth();
+                localStorage.setItem(`c${getShortY()}_${m}_${d}_wo`, '1');
+                playBeep('good'); triggerVibration('good');
+                triggerToast("WODA ZAZNACZONA"); updateEngine(); renderTable();
+            } else { triggerToast("BRAK WEKTORA WODY ('wo')"); }
+        }
+
+        // --- S.O.S BUTTON ---
+        function triggerSOS() {
+            triggerVibration('bad');
+            const msg = `⚠️ AGENT ${localStorage.getItem('cfg_agent_id')} WZYWA WSPARCIE!\nZAGROŻENIE: Brak motywacji. System domaga się wsparcia oddziału. ODBIÓR.\n--\nZainicjuj System: ${window.location.href}\nArchitekt: @Kryspinowskyy`;
+            if(navigator.clipboard) { navigator.clipboard.writeText(msg).then(() => triggerToast("KOMUNIKAT S.O.S W SCHOWKU!")); }
+            if(navigator.share) { navigator.share({ text: msg }); }
+        }
+
+        // --- CISZA RADIOWA (POMODORO) ---
+        function openRadio() { document.getElementById('modal-radio').style.display = 'flex'; radioTime = 1500; updateRadioUI(); }
+        function updateRadioUI() {
+            const m = Math.floor(radioTime / 60).toString().padStart(2, '0');
+            const s = (radioTime % 60).toString().padStart(2, '0');
+            document.getElementById('radio-timer').innerText = `${m}:${s}`;
+        }
+        function startRadio() {
+            document.getElementById('btn-radio-start').innerText = "TRWA...";
+            document.getElementById('btn-radio-start').disabled = true;
+            clearInterval(radioInterval);
+            radioInterval = setInterval(() => {
+                radioTime--; updateRadioUI();
+                if(radioTime <= 0) {
+                    clearInterval(radioInterval); playBeep('alarm'); triggerVibration('alarm');
+                    triggerToast("ZADANIE WYKONANE!"); closeModal('modal-radio');
+                    document.getElementById('btn-radio-start').innerText = "START"; document.getElementById('btn-radio-start').disabled = false;
+                }
+            }, 1000);
+        }
+        function stopRadio() {
+            clearInterval(radioInterval); closeModal('modal-radio');
+            document.getElementById('btn-radio-start').innerText = "START"; document.getElementById('btn-radio-start').disabled = false;
+        }
+
+        // --- ODLICZANIE TAKTYCZNE ---
+        function loadMission() {
+            try {
+                const mission = JSON.parse(localStorage.getItem('cfg_mission') || "null");
+                if (mission && mission.date && mission.name) {
+                    document.getElementById('mission-input-name').value = mission.name;
+                    document.getElementById('mission-input-date').value = mission.date;
+                    
+                    const targetDate = new Date(mission.date);
+                    const diffTime = targetDate - new Date();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays >= 0) {
+                        document.getElementById('mission-container').style.display = 'flex';
+                        document.getElementById('mission-name').innerText = `CEL: ${mission.name}`;
+                        document.getElementById('mission-days').innerText = `${diffDays} DNI`;
+                    }
+                }
+            } catch(e) {}
+        }
+        function saveMission() {
+            const name = document.getElementById('mission-input-name').value.trim();
+            const date = document.getElementById('mission-input-date').value;
+            if(name && date) {
+                localStorage.setItem('cfg_mission', JSON.stringify({name, date}));
+                loadMission(); triggerToast("MISJA ZATWIERDZONA");
+            }
+        }
+
+        // --- RAPORT I UDOSTĘPNIANIE Z PODPISEM ARCHITEKTA ---
+        function copyDailySitrep() {
+            const d = new Date().getDate(); let scoreText = "";
+            targets.forEach(t => {
+                const isChecked = localStorage.getItem(`c${getShortY()}_${currM}_${d}_${t.id}`) === '1';
+                if(t.type === 'good') scoreText += isChecked ? "🟩" : "⬛";
+                else if(t.type === 'bad') scoreText += isChecked ? "🟥" : "⬜";
+                else if(t.type === 'tracker') scoreText += isChecked ? "🟪" : "⬛";
+                else if(t.type === 'blocked') scoreText += "➖";
+            });
+            const lvl = Math.floor(globalExp / 10) + 1;
+            const textToShare = `DAILY_HUD | SYS.${currY}\nAGENT: ${localStorage.getItem('cfg_agent_id')}\nRANGA: ${getRankName(lvl)} (Lvl ${lvl})\nDZIEŃ: ${d.toString().padStart(2,'0')}\nSTATUS: ${scoreText}\n--\nZainicjuj System: ${window.location.href}\nArchitekt: @Kryspinowskyy`;
+            if(navigator.clipboard) { navigator.clipboard.writeText(textToShare).then(() => triggerToast("RAPORT W SCHOWKU")); }
+            else { triggerToast("Błąd dostępu do schowka."); }
+        }
+
+        // --- NOTATKI (DEBRIEFING) ---
+        function openNoteModal(d) { 
+            activeNoteKey = `n${getShortY()}_${currM}_${d}`; 
+            let noteObj = {v:"", t:"", m:"3"};
+            try { const saved = localStorage.getItem(activeNoteKey); if(saved) noteObj = JSON.parse(saved); } catch(e) { noteObj.v = localStorage.getItem(activeNoteKey); }
+            
+            document.getElementById('note-victory').value = noteObj.v || "";
+            document.getElementById('note-threat').value = noteObj.t || "";
+            document.getElementById('note-morale').value = noteObj.m || "3";
+            document.getElementById('modal-note').style.display = 'flex'; 
+        }
+        function saveNote() { 
+            const v = document.getElementById('note-victory').value.trim();
+            const t = document.getElementById('note-threat').value.trim();
+            const m = document.getElementById('note-morale').value;
+            if(v || t) { localStorage.setItem(activeNoteKey, JSON.stringify({v, t, m})); } else { localStorage.removeItem(activeNoteKey); }
+            closeModal('modal-note'); renderTable(); triggerToast(TRANSLATIONS[currentLang].saved); 
+        }
+
+        // --- USTAWIENIA I WEKTORY ---
+        function openSettings() { 
+            const editor = document.getElementById('targets-editor'); editor.innerHTML = ""; 
+            const hvtSel = document.getElementById('hvt-selector'); hvtSel.innerHTML = "<option value=''>Brak (Standard)</option>";
+            
+            targets.forEach(t => {
+                addTargetRow(editor, t.id, t.ico, t.lab, t.type);
+                if(t.type !== 'blocked') { hvtSel.innerHTML += `<option value="${t.id}" ${localStorage.getItem('cfg_hvt')===t.id?'selected':''}>${t.ico} ${t.lab}</option>`; }
+            }); 
+            document.getElementById('modal-settings').style.display = 'flex'; 
+        }
+        function addTargetRow(c, id, ico, lab, type) { const div = document.createElement('div'); div.dataset.id = id||Date.now(); div.style.display="flex"; div.style.gap="5px"; div.style.marginBottom="10px"; div.innerHTML = `<input type="text" value="${ico||''}" style="width:45px;text-align:center;margin:0;"><input type="text" value="${lab||''}" style="flex:1;margin:0;"><select class="form-select" style="width:auto;margin:0;padding:5px;height:41px;"><option value="good" ${type==='good'?'selected':''}>+ (Dobry)</option><option value="bad" ${type==='bad'?'selected':''}>- (Zły)</option><option value="tracker" ${type==='tracker'?'selected':''}>Log</option><option value="blocked" ${type==='blocked'?'selected':''}>B (Zablokowany)</option></select><button class="btn-icon" style="color:var(--crit);padding:5px 12px;margin:0;border-color:var(--crit);" onclick="this.parentElement.remove()">X</button>`; c.appendChild(div); }
+        function addNewTargetField() { addTargetRow(document.getElementById('targets-editor'), '', '⚡', '', 'good'); }
+        function saveTargets() { 
+            const rows = document.getElementById('targets-editor').children; const nT = []; 
+            for(let r of rows) { const inputs = r.querySelectorAll('input, select'); if(inputs[0].value && inputs[1].value) nT.push({id: r.dataset.id, ico: inputs[0].value, lab: inputs[1].value, type: inputs[2].value}); } 
+            targets = nT; localStorage.setItem('cfg_targets_26_clean', JSON.stringify(targets)); 
+            localStorage.setItem('cfg_hvt', document.getElementById('hvt-selector').value);
+            closeModal('modal-settings'); renderTable(); triggerToast(TRANSLATIONS[currentLang].saved); 
+        }
+
+        function scrollToToday() { const el = document.getElementById(`day-row-${new Date().getDate()}`); if(el) document.getElementById('main-scroll').scrollTop = el.offsetTop - 100; }
+        function triggerToast(txt) { const t = document.getElementById('toast'); t.innerText = txt; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
         function openProfile() {
             document.getElementById('heatmap-year').innerText = currY;
             const grid = document.getElementById('heatmap-container'); grid.innerHTML = '';
             const daysInYear = (currY % 4 === 0 && currY % 100 !== 0) || currY % 400 === 0 ? 366 : 365;
             let d = new Date(currY, 0, 1);
-            
             for(let i=0; i<daysInYear; i++) {
                 let m = d.getMonth(); let day = d.getDate(); let score = 0;
                 targets.filter(t=>t.type==='good').forEach(t => { if(localStorage.getItem(`c${getShortY()}_${m}_${day}_${t.id}`) === '1') score++; });
@@ -350,29 +865,18 @@
                 else if(score > 4) box.classList.add('heat-lvl-3');
                 grid.appendChild(box); d.setDate(d.getDate() + 1);
             }
-
             const badgesArea = document.getElementById('badges-container'); badgesArea.innerHTML = '';
             const lvl = Math.floor(globalExp / 10) + 1;
             BADGES_DEF.forEach(b => {
                 const unlocked = lvl >= b.reqLvl;
                 badgesArea.innerHTML += `<div class="badge-row ${unlocked ? 'unlocked' : ''}"><div class="badge-ico">${b.ico}</div><div><div class="badge-title">${currentLang==='pl'?b.namePL:b.nameEN}</div><div class="badge-desc">${currentLang==='pl'?b.descPL:b.descEN} (LVL ${b.reqLvl})</div></div></div>`;
             });
-
             document.getElementById('modal-profile').style.display = 'flex';
         }
 
-        function openNoteModal(d) { activeNoteKey = `n${getShortY()}_${currM}_${d}`; document.getElementById('note-input').value = localStorage.getItem(activeNoteKey) || ""; document.getElementById('modal-note').style.display = 'flex'; }
-        function saveNote() { const v = document.getElementById('note-input').value.trim(); v ? localStorage.setItem(activeNoteKey, v) : localStorage.removeItem(activeNoteKey); closeModal('modal-note'); renderTable(); triggerToast(TRANSLATIONS[currentLang].saved); }
-        function openSettings() { const editor = document.getElementById('targets-editor'); editor.innerHTML = ""; targets.forEach(t => addTargetRow(editor, t.id, t.ico, t.lab, t.type)); document.getElementById('modal-settings').style.display = 'flex'; }
-        function addTargetRow(c, id, ico, lab, type) { const div = document.createElement('div'); div.dataset.id = id||Date.now(); div.style.display="flex"; div.style.gap="5px"; div.style.marginBottom="10px"; div.innerHTML = `<input type="text" value="${ico||''}" style="width:45px;text-align:center;margin:0;"><input type="text" value="${lab||''}" style="flex:1;margin:0;"><select class="form-select" style="width:auto;margin:0;padding:5px;height:41px;"><option value="good" ${type==='good'?'selected':''}>+</option><option value="bad" ${type==='bad'?'selected':''}>-</option><option value="tracker" ${type==='tracker'?'selected':''}>Log</option></select><button class="btn-icon" style="color:var(--bad);padding:5px 12px;margin:0;border-color:var(--bad);" onclick="this.parentElement.remove()">X</button>`; c.appendChild(div); }
-        function addNewTargetField() { addTargetRow(document.getElementById('targets-editor'), '', '⚡', '', 'good'); }
-        function saveTargets() { const rows = document.getElementById('targets-editor').children; const nT = []; for(let r of rows) { const inputs = r.querySelectorAll('input, select'); if(inputs[0].value && inputs[1].value) nT.push({id: r.dataset.id, ico: inputs[0].value, lab: inputs[1].value, type: inputs[2].value}); } targets = nT; localStorage.setItem('cfg_targets_26_clean', JSON.stringify(targets)); closeModal('modal-settings'); renderTable(); triggerToast(TRANSLATIONS[currentLang].saved); }
-        function scrollToToday() { const el = document.getElementById(`day-row-${new Date().getDate()}`); if(el) document.getElementById('main-scroll').scrollTop = el.offsetTop - 100; }
-        function triggerToast(txt) { const t = document.getElementById('toast'); t.innerText = txt; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
+        function triggerOmega() { if(confirm("UWAGA!\n\nTRWA CAŁKOWITE ZEROWANIE PAMIĘCI SYSTEMU.\nZostaną usunięte wszystkie logi, odznaki i wektory.\n\nCzy na pewno chcesz zainicjować Protokół OMEGA?")) { localStorage.clear(); location.reload(); } }
         function exportData() { const d = {}; for(let i=0; i<localStorage.length; i++) { const k = localStorage.key(i); if(k.includes('_')) d[k] = localStorage.getItem(k); } const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type:"application/json"})); a.download = `hud_backup.json`; a.click(); }
-        function exportCSV() { let csv = "Rok,Miesiac,Dzien,Typ,ID_Celu,Wartosc\n"; for(let i=0; i<localStorage.length; i++) { const k=localStorage.key(i); if(k.startsWith('c')||k.startsWith('n')) { const p=k.split('_'); if(p.length>=3) { const t=k.startsWith('c')?"Wektor":"Notatka"; let w=localStorage.getItem(k); if(w.includes(','))w=`"${w}"`; csv+=`20${p[0].substring(1)},${parseInt(p[1])+1},${p[2]},${t},${p[3]||"LOG"},${w}\n`; } } } const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"})); a.download = `hud_dane.csv`; a.click(); }
+        function exportCSV() { let csv = "Rok,Miesiac,Dzien,Typ,ID_Celu,Wartosc\n"; for(let i=0; i<localStorage.length; i++) { const k=localStorage.key(i); if(k.startsWith('c')||k.startsWith('n')||k.startsWith('k')) { const p=k.split('_'); if(p.length>=3) { const t=k.startsWith('c')?"Wektor":(k.startsWith('k')?"Kcal":"Notatka"); let w=localStorage.getItem(k); if(w.includes(','))w=`"${w.replace(/"/g, '""')}"`; csv+=`20${p[0].substring(1)},${parseInt(p[1])+1},${p[2]},${t},${p[3]||"LOG"},${w}\n`; } } } const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"})); a.download = `hud_dane.csv`; a.click(); }
         function importData(e) { const r = new FileReader(); r.onload = function(ev) { const d = JSON.parse(ev.target.result); Object.keys(d).forEach(k => localStorage.setItem(k, d[k])); location.reload(); }; r.readAsText(e.target.files[0]); }
 
         boot();
