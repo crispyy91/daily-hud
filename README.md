@@ -1,7 +1,7 @@
 # 🎯 DAILY_HUD | Tactical Habit Tracker
 
 <div align="center">
-  ![DAILY_HUD Promo](IMG_20260313_100253.png)
+  ​<img src="IMG_20260313_100253.png" alt="DAILY_HUD Promo">
   <h3><strong>YOUR LIFE. YOUR HUD. DAILY_HUD.</strong></h3>
   <p>Operate your life. Gamify. Track. Evolve.</p>
   
